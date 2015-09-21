@@ -1,5 +1,6 @@
 node_modules
 db/**
 gulpfile.js
+.DS_Store
 **/.DS_Store
 index.html
