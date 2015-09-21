@@ -1,0 +1,39 @@
+{
+  "name": "knockknocks",
+  "version": "0.1.0",
+  "description": "A knock-knock server. You tell it jokes, it tells you jokes. It's fun!",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "keywords": [
+    "knock",
+    "joke",
+    "fun"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knockknocks/knockknocks.git"
+  },
+  "author": "knockknocks",
+  "contributors": [
+    {"name": "andrewmnelson"},
+    {"name": "jalleng"},
+    {"name": "RyuGuardian"}
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knockknocks/knockknocks/issues"
+  },
+  "homepage": "https://github.com/knockknocks/knockknocks#readme",
+  "dependencies": {
+    "bcrypt": "^0.8.5",
+    "chai": "^3.3.0",
+    "chai-http": "^1.0.0",
+    "eat": "^0.1.1",
+    "express": "^4.13.3",
+    "http": "0.0.0",
+    "mocha": "^2.3.3",
+    "mongoose": "^4.1.8"
+  }
+}
