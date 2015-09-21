@@ -1,0 +1,36 @@
+{
+  "name": "knockknocks",
+  "version": "0.1.0",
+  "description": "a knock knock joke server",
+  "main": "server.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jalleng/knockknocks.git"
+  },
+  "author": "JAG AAK AMN",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jalleng/knockknocks/issues"
+  },
+  "homepage": "https://github.com/jalleng/knockknocks#readme",
+  "dependencies": {
+    "bcrypt": "^0.8.5",
+    "body-parser": "^1.13.3",
+    "eat": "^0.1.1",
+    "email-verification": "^0.1.9",
+    "express": "^4.13.3",
+    "mailgun-validate-email": "^2.0.1",
+    "mongoose": "^4.1.7"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "chai-http": "^1.0.0",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-mocha": "^2.1.3",
+    "mocha": "^2.3.2"
+  }
+}
