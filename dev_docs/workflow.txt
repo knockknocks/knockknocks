@@ -1,0 +1,63 @@
+At knockknocks.net:
+
+================================
+Initial screen:
+Who's there? _____
+Enter your user name to log in,
+or your email to subscribe to knockknocks
+
+- - - - - - - - - - - - - - - -
+Enter email: - one of:
+That email is already used - enter your username to log in (back to Initial)
+  - or - 
+  (to Welcome to knockknocks)
+
+- - - - - - - - - - - - - - - -
+Enter user name:
+ Who's there? _username_
+Username who? _p******d_
+Click "Log in" or <enter> from password field = one of:
+Incorrect user name or password [could extend to password reset, p'bly not]
+  - or - (to Logged in)
+
+
+================================
+Welcome to knockknocks!
+Pick your user name _____
+       and password _____
+Click "Subscribe"
+
+- - - - - - - - - - - - - - - -
+"Subscribe" - one of:
+"That user name is already taken - please try another" (stay on Welcome)
+  - or -
+We've sent you an email at
+  email@server.dom
+Click on the link in the message
+to activate your account!        (back to Initial)
+
+================================
+Logged in:
+Click    "Knock Knock"
+Click "Wanna hear a joke?"
+Click "Log out" = terminate login session (back to Initial)
+
+================================
+"Knock Knock":
+  Who's there? __setup______ <enter>
++ _setup_ who? __punchline__ <enter>
++ one of:
+  That's a new one!
+    - or -
+  "Already heard that one from <username>" (back to Logged in)
+
+================================
+Hear a joke:
+Knock Knock? Click "who's there?"
++Setup!       Click "setup who?"
++Punchline!
+
++Click "like it" or Click "hate it" [or click "flag it"]?
++show effect of vote on popularity of joke (and author)?  (back to Logged in)
+
+Login session token has an expire date - req with expired token goes to Initial
