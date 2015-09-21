@@ -2,9 +2,9 @@
   "name": "knockknocks",
   "version": "0.1.0",
   "description": "a knock knock joke server",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha test"
   },
   "repository": {
     "type": "git",
@@ -17,11 +17,12 @@
   },
   "homepage": "https://github.com/jalleng/knockknocks#readme",
   "dependencies": {
-    "email-verification": "^0.1.9",
     "bcrypt": "^0.8.5",
-    "eat": "^0.1.1",
     "body-parser": "^1.13.3",
+    "eat": "^0.1.1",
+    "email-verification": "^0.1.9",
     "express": "^4.13.3",
+    "mailgun-validate-email": "^2.0.1",
     "mongoose": "^4.1.7"
   },
   "devDependencies": {
