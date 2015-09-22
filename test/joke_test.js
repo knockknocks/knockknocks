@@ -9,7 +9,8 @@ var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
 
-var url = 'localhost:3333/';
+var kkPORT = (process.env.PORT || 3000);
+var jokeURL = 'localhost:' + kkPORT + '/';
 
 describe("the joke resource", function() {
   after(function(done) {
@@ -22,7 +23,7 @@ describe("the joke resource", function() {
   });
 
   it("should be able to create a joke", function(done) {
-    chai.request(url)
+    chai.request(jokeURL)
       .post('joke')
       .send({setup: "To", punchline: "To WHOM", author: "admin"})
       .end(function(err, resp) {
@@ -55,7 +56,7 @@ describe("the joke resource", function() {
     });
 
     it("should be able to tell a joke", function(done) {
-      chai.request(url)
+      chai.request(jokeURL)
         .get('joke')
         .end(function(err, resp) {
           expect(err).to.eql(null);
