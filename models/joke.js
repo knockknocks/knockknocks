@@ -21,11 +21,12 @@ var mongoose = require('mongoose');
     A flag to indicate the joke is explict and meant for users marked "adult."
  */
 var jokeSchema = new mongoose.Schema({
-  ID: ({type: Number, unique: true}),
-  setup: String,
-  punchline: String,
-  author: String
-  //, rating: Number //one of the first stretch goals
+  ID: {type: Number, unique: true},
+  setup: {type: String, trim: true},
+  punchline: {type: String, trim: true},
+  author: String,
+  rating: {type: Number, min: 1, max: 5, default: 1}, //one of the first stretch goals
+  numberOfRatings: {type: Number, default: 0}
   //, adult_only: Boolean {default: true} //not in use right away
 });
 
@@ -34,5 +35,20 @@ var jokeSchema = new mongoose.Schema({
 /************** METHODS ******************/
 //respond with setups and punchlines, include author?
 //respond to setups and punchlines
+jokeSchema.methods.generateToken = function() {
+  return this.ID;
+};
+
+jokeSchema.methods.updateRating = function(latestRating) {
+  var oldTotalRating = this.rating * this.numberOfRatings;
+  this.numberOfRatings++;
+  this.rating = (oldTotalRating + latestRating) / this.numberOfRatings;
+  this.save(function(err, data) {
+    if(err) {
+      debugger;
+      return handleError(err, resp);
+    }
+  });
+};
 
 module.exports = mongoose.model('Joke', jokeSchema);

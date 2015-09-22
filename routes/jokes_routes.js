@@ -3,77 +3,100 @@
 var express = require('express');
 var jsonParser = require('body-parser').json();
 var Joke = require(__dirname + '/../models/joke');
-//var handleError = require(__dirname + '/../lib/handle_error');
+var handleError = require(__dirname + '/../lib/handle_error');
 
 var jokeRouter = module.exports = exports = express.Router();
 
-//should go to login/signup screen; if login token, tell joke
-jokeRouter.get('/joke', function(req, resp) {
+jokeRouter.get('/knockknock', function(req, resp) {
   //we need multiple GETs and POSTs to take care of back-and-forth telling of jokes
   
   //retrieve joke for session, show ID and open with "Knock knock."
   //when finding a joke, need to find one within the user's not_seen array
   Joke.findOne({ID: 1}, function(err, data) {
     if(err) {
-      return err;
+      return handleError(err, resp);
     }
     
     var jokeText = "Joke #" + data.ID + "\n";
     jokeText +=  "Knock knock.\n"; //first line to send
 
-    resp.json({msg: jokeText, meta: data.ID});  //send token, also send joke ID?
+    resp.json({msg: jokeText, token: data.generateToken()});  //send token, also send joke ID?
   });
 });
 
-jokeRouter.post('/joke/who', jsonParser, function(req, resp) {
-  console.log('/joke/who', req.body);
-  if(req.body.msg)
-  {
-    Joke.findOne({ID: 1}, function(err, data) {
+jokeRouter.get('/whosthere/*', function(req, resp) {
+  Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return err;
+      return handleError(err, resp);
     }
 
     var jokeText = data.setup + ".\n";
-
-    resp.json({msg: req.body.msg + "\n" + jokeText, meta: data.ID});  //also send token
-    });
-  }
-  else {
-    resp.json({msg: "Knock knock.\n"});   //also send token, and joke ID?
-  }
-});
-
-jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
-  Joke.findOne({ID: 1}, function(err, data) {
-    if(err) {
-      return err;
-    }
-
-    if(req.body.msg) {
-
-      var jokeText = data.punchline + ".";
-
-      resp.json({msg: req.body.msg + "\n" + jokeText, meta: data.ID});  //also send token
-    }
-    else {
-      resp.json(data.setup + ".\n");  //also send token, and joke ID?
-    }
+    resp.json({msg: jokeText, token: data.generateToken()});  //also send token
   });
 });
 
-//jokeRouter.post('/joke/vote') -- vote for joke just heard, update user's unseen list
-
-//we need multiple GETs and POSTs to take care of back-and-forth telling of jokes
-jokeRouter.post('/joke', jsonParser, function(req, resp) {
-  var newJoke = new Joke(req.body);
-
-  newJoke.save(function(err, data) {
+jokeRouter.get('/punchline/*', function(req, resp) {
+  Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return resp.status(401).json({msg: "could not make joke"});
+      return handleError(err, resp);
     }
 
-    resp.json(data);
+    var jokeText = data.punchline + ".";
+    resp.json({msg: jokeText, token: data.generateToken()});
+  });
+});
+
+jokeRouter.post('/rate/*', jsonParser, function(req, resp) {
+  Joke.findOne({ID: req.params[0]}, function(err, data) {
+    if(err) {
+      return handleError(err, resp);
+    }
+
+    data.updateRating(req.body.rating);
+
+    //*******TODO: update user's unseen list*******
+
+    resp.json({msg: "The average rating for this joke is " + data.rating.toFixed(1) + " knocks!\n"});
+  });
+});
+
+//user sends "Knock knock" so server can hear joke
+jokeRouter.get('/joke', function(req, resp) {
+  resp.json({msg: "Who's there?\n"});
+
+  //will include user token
+});
+
+//user sends setup for joke:
+jokeRouter.post('/joke/setup', jsonParser, function(req, resp) {
+  resp.json({msg: req.body.setup + " who?\n"});
+});
+
+//user sends punchline; joke gets saved
+jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
+  var username = "me";
+
+  //see if we already heard that one
+  Joke.findOne({setup: req.body.setup, punchline: req.body.punchline}, function(err, data) {
+    if(err) {
+      return handleError(err, resp);
+    }
+
+    if(data !== null) {
+      return resp.json({msg: "Already heard that one!"});
+    }
+
+    //save if we haven't heard it; include username as author
+    var newJoke = new Joke(req.body);
+    newJoke.author = username;
+    
+    newJoke.save(function(err, data) {
+      if(err) {
+        return handleError(err, resp);
+      }
+
+      resp.json({msg: "That's a new one!"});
+    });
   });
 });
 

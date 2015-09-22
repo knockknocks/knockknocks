@@ -9,7 +9,7 @@ var EE = require('events').EventEmitter;
 
 var usersRouter = module.exports = exports = express.Router();
 
-usersRouter.post('/signup', jsonParser, function(req, res) {
+usersRouter.post('/signup', jsonParser, function(req, resp) {
   var routeEvents = new EE();
   var newUser = new User();
   newUser.basic.username = req.body.username;
@@ -17,14 +17,14 @@ usersRouter.post('/signup', jsonParser, function(req, res) {
   newUser.email = req.body.email;
   newUser.generateHash(req.body.password, function(err, hash) {
     if (err) {
-      return res.send("Meow!, Could not authenticat");
+      return resp.send("Meow!, Could not authenticat");
     }
       routeEvents.emit("hasher", hash);
   });
   routeEvents.on("hasher", function(hash) {
     newUser.save(function(err, data) {
       if (err) {
-        return res.status(400).json({err:"Meow!, Could not authenticat"});
+        return resp.status(400).json({err:"Meow!, Could not authenticat"});
       }
         routeEvents.emit("save", data);
     });
@@ -32,28 +32,28 @@ usersRouter.post('/signup', jsonParser, function(req, res) {
   routeEvents.on("save", function(data) {
     newUser.generateToken(function(err, token) {
       if (err) {
-        return res.send("Meow!, Could not authenticat");
+        return resp.send("Meow!, Could not authenticat");
       }
-        return res.json({token: token});
+        return resp.json({token: token});
     });
   });
 });
 
-usersRouter.get('/signin', httpBasic, function(req, res) {
+usersRouter.get('/signin', httpBasic, function(req, resp) {
   var signinEvents = new EE();
   User.findOne({'basic.username': req.auth.username}, function(err, user) {
-    if (err) return handleError(err, res);
+    if (err) return handleError(err, resp);
     if (!user) {
-      return res.status(401).json({msg: 'Meow! Could not authenticat!'});
+      return resp.status(401).json({msg: 'Meow! Could not authenticat!'});
     }
     signinEvents.emit("findOne", user);
   });
 
   signinEvents.on("findOne", function(user) {
-    user.compareHash(req.auth.password, function(err, hashRes) {
-      if (err) return handleError(err, res);
-      if (!hashRes) {
-        return res.status(401).json({msg: 'Meow! Could not authenticat!'});
+    user.compareHash(req.auth.password, function(err, hashresp) {
+      if (err) return handleError(err, resp);
+      if (!hashresp) {
+        return resp.status(401).json({msg: 'Meow! Could not authenticat!'});
       }
       signinEvents.emit("compare", user);
     });
@@ -61,8 +61,8 @@ usersRouter.get('/signin', httpBasic, function(req, res) {
 
   signinEvents.on("compare", function(user) {
     user.generateToken(function(err, token) {
-      if (err) return handleError(err, res);
-        res.json({token: token});
+      if (err) return handleError(err, resp);
+        resp.json({token: token});
     });
   });
 });

@@ -12,7 +12,7 @@ var httpBasic = require(__dirname + '/../lib/http_basic');
 var mongoose = require('mongoose');
 
 var kkPORT = (process.env.PORT || 3000);
-var apiURL = 'localhost:' + kkPORT + '/api';
+var apiURL = 'localhost:' + kkPORT;
 
 describe('httpBasic', function() {
   it('should be able to parse http basic auth', function() {
@@ -41,9 +41,9 @@ describe('auth', function() {
     chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser1', password: 'testpass1', email: 'testuser1@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(err).to.eql(null);
-        expect(res.body.token).to.have.length.above(0);
+        expect(resp.body.token).to.have.length.above(0);
         done();
       });
   });
@@ -54,7 +54,7 @@ describe('auth', function() {
       user.email = 'testuser2@test.com';
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
-      user.generateHash('testpass2', function(err, res) {
+      user.generateHash('testpass2', function(err, resp) {
         if (err) throw err;
         user.save(function(err, data) {
           if (err) throw err;
@@ -71,9 +71,9 @@ describe('auth', function() {
       chai.request(apiURL)
         .get('/signin')
         .auth('testuser2', 'testpass2')
-        .end(function(err, res) {
+        .end(function(err, resp) {
           expect(err).to.eql(null);
-          expect(res.body.token).to.have.length.above(0);
+          expect(resp.body.token).to.have.length.above(0);
           done();
         });
     });
@@ -82,10 +82,10 @@ describe('auth', function() {
       chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser2', password: 'testpass3', email: 'testuser3@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(res.body.token).to.not.exist;
+        expect(resp.body.token).to.not.exist;
         done();
       });
     });
@@ -94,10 +94,10 @@ describe('auth', function() {
       chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser3', password: 'testpass4', email: 'testuser2@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(res.body.token).to.not.exist;
+        expect(resp.body.token).to.not.exist;
         done();
       });
     });

@@ -9,7 +9,7 @@ var kkLog = require(__dirname + '/lib/knockknocks_log');
 
 process.env.APP_SECRET = process.env.APP_SECRET || 'safeword';
 var usersRouter = require(__dirname + '/routes/users_routes');
-app.use('/api', usersRouter);
+app.use('/', usersRouter);
 
 var jokeRouter = require(__dirname + '/routes/jokes_routes');
 app.use('/', jokeRouter);
