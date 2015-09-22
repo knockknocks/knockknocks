@@ -5,10 +5,14 @@ var app = express();
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/knockknocks_dev');
 
-//var kkRouter = require(__dirname + '/routes/lyrics_routes');
 var kkLog = require(__dirname + '/lib/knockknocks_log');
 
-//app.use('/api', kkRouter);  // this "mounts" the router at the URL
+process.env.APP_SECRET = process.env.APP_SECRET || 'safeword';
+var usersRouter = require(__dirname + '/routes/users_routes');
+app.use('/api', usersRouter);
+
+var jokeRouter = require(__dirname + '/routes/jokes_routes');
+app.use('/', jokeRouter);
 
 var port = process.env.PORT || 3333;
 app.listen(port, function() {
