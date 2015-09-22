@@ -17,9 +17,15 @@
   },
   "author": "knockknocks",
   "contributors": [
-    {"name": "andrewmnelson"},
-    {"name": "jalleng"},
-    {"name": "RyuGuardian"}
+    {
+      "name": "andrewmnelson"
+    },
+    {
+      "name": "jalleng"
+    },
+    {
+      "name": "RyuGuardian"
+    }
   ],
   "license": "ISC",
   "bugs": {
@@ -28,6 +34,7 @@
   "homepage": "https://github.com/knockknocks/knockknocks#readme",
   "dependencies": {
     "bcrypt": "^0.8.5",
+    "body-parser": "^1.14.0",
     "chai": "^3.3.0",
     "chai-http": "^1.0.0",
     "eat": "^0.1.1",
