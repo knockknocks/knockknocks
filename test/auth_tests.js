@@ -4,7 +4,7 @@ var chai = require('chai');
 var chaihttp = require('chai-http');
 chai.use(chaihttp);
 var expect = chai.expect;
-process.env.MONGO_URL = 'mongodb://localhost/words_wat';
+process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
 require(__dirname + '/../server');
 var User = require(__dirname + '/../models/user');
 var eatauth = require(__dirname + '/../lib/eat_auth');
@@ -37,7 +37,7 @@ describe('auth', function() {
   it('should be able to create a user', function(done) {
     chai.request('localhost:3000/api')
       .post('/signup')
-      .send({username: 'testuser', password: 'foobarbaz'})
+      .send({username: 'testuser1', password: 'testpass1', email: 'testuser1@test.com'})
       .end(function(err, res) {
         expect(err).to.eql(null);
         expect(res.body.token).to.have.length.above(0);
@@ -48,9 +48,10 @@ describe('auth', function() {
   describe('user already in database', function() {
     before(function(done) {
       var user = new User();
-      user.username = 'test';
-      user.basic.username = 'test';
-      user.generateHash('foobarbaz', function(err, res) {
+      user.email = 'testuser2@test.com';
+      user.username = 'testuser2';
+      user.basic.username = 'testuser2';
+      user.generateHash('testpass2', function(err, res) {
         if (err) throw err;
         user.save(function(err, data) {
           if (err) throw err;
@@ -66,12 +67,36 @@ describe('auth', function() {
     it('should be able to sign in', function(done) {
       chai.request('localhost:3000/api')
         .get('/signin')
-        .auth('test', 'foobarbaz')
+        .auth('testuser2', 'testpass2')
         .end(function(err, res) {
           expect(err).to.eql(null);
           expect(res.body.token).to.have.length.above(0);
           done();
         });
+    });
+
+    it('should not be able to create a user with a duplicate name', function(done) {
+      chai.request('localhost:3000/api')
+      .post('/signup')
+      .send({username: 'testuser2', password: 'testpass3', email: 'testuser3@test.com'})
+      .end(function(err, res) {
+        expect(true).to.eql(true);
+        expect(err).to.eql(null);
+        expect(res.body.token).to.not.exist;
+        done();
+      });
+    });
+
+    it('should not be able to create a user with a duplicate email', function(done) {
+      chai.request('localhost:3000/api')
+      .post('/signup')
+      .send({username: 'testuser3', password: 'testpass4', email: 'testuser2@test.com'})
+      .end(function(err, res) {
+        expect(true).to.eql(true);
+        expect(err).to.eql(null);
+        expect(res.body.token).to.not.exist;
+        done();
+      });
     });
 
     it('should be able to authenticate with eat auth', function(done) {
@@ -83,7 +108,7 @@ describe('auth', function() {
       };
 
       eatauth(req, {}, function() {
-        expect(req.user.username).to.eql('test');
+        expect(req.user.username).to.eql('testuser2');
         done();
       });
     });

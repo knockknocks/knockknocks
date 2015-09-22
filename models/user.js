@@ -6,12 +6,15 @@ var eat = require('eat');
 
 var userSchema = new mongoose.Schema({
   username: {type: String, unique: true},
+  email: {type: String, unique: true},
   basic: {
-    email: {type: String, unique: true},
+    username: String,
     password: String
-  },
-  seen_jokes: Array,  //might not be kept in userSchema
-  adult: Boolean  //for allowing adult jokes; not in use yet
+  }
+
+  // unseen_jokes: Array,  //contains IDs of unseen jokes
+  // jokeIndex: Number, // keeps track of highest ID added to unseen jokes
+  // adult: Boolean  //for allowing adult jokes; not in use yet
 });
 
 userSchema.methods.generateHash = function(password, callback) {
@@ -31,3 +34,4 @@ userSchema.methods.generateToken = function(callback) {
 };
 
 module.exports = mongoose.model('User', userSchema);
+
