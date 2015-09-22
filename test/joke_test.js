@@ -9,7 +9,8 @@ var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
 
-var url = 'localhost:3333/';
+var kkPORT = (process.env.PORT || 3000);
+var jokeURL = 'localhost:' + kkPORT + '/';
 
 describe("the joke resource", function() {
   after(function(done) {
@@ -21,9 +22,9 @@ describe("the joke resource", function() {
     });
   });
 
-  it("should be able to create a joke", function(done) {
-    chai.request(url)
-      .post('tell-joke')
+  it("should be able to take a joke", function(done) {
+    chai.request(jokeURL)
+      .post('joke')
       .send({setup: "To", punchline: "To WHOM", author: "admin"})
       .end(function(err, resp) {
         expect(err).to.eql(null);
@@ -60,8 +61,8 @@ describe("the joke resource", function() {
 + "To who?\n"       //user says this (or something)                               (user consents to joke)
 + "To WHOM.");      //punchline: server sends in response to new GET with string  (server completes joke: remove from user's unseen list)
 */
-    it("should be able to start a joke", function(done) {
-      chai.request(url)
+    it("should be able to tell a joke", function(done) {
+      chai.request(jokeURL)
         .get('joke')
         .end(function(err, resp) {
           expect(err).to.eql(null);
