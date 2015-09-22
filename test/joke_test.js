@@ -23,7 +23,7 @@ describe("the joke resource", function() {
 
   it("should be able to create a joke", function(done) {
     chai.request(url)
-      .post('joke')
+      .post('tell-joke')
       .send({setup: "To", punchline: "To WHOM", author: "admin"})
       .end(function(err, resp) {
         expect(err).to.eql(null);
@@ -36,7 +36,7 @@ describe("the joke resource", function() {
   });
 
   describe("routes that need a joke in the database", function() {
-    beforeEach(function(done) {
+    before(function(done) {
       var testJoke = new Joke({
         ID: 1,
         setup: "To",
@@ -53,20 +53,49 @@ describe("the joke resource", function() {
         done();
       }.bind(this));
     });
-
-    it("should be able to tell a joke", function(done) {
+/*
+"Knock knock.\n"    //ideally: server sends this on get                           (server starts a joke)
++ "Who's there?\n"  //user says this (or something)                               (user instigates joke)
++ "To.\n"           //setup: server sends in response to new GET with string      (server sends setup)
++ "To who?\n"       //user says this (or something)                               (user consents to joke)
++ "To WHOM.");      //punchline: server sends in response to new GET with string  (server completes joke: remove from user's unseen list)
+*/
+    it("should be able to start a joke", function(done) {
       chai.request(url)
         .get('joke')
         .end(function(err, resp) {
           expect(err).to.eql(null);
-          expect(resp.body.msg).to.eql(
-            "Knock knock.\n"    //ideally: server sends this on GET
-            + "Who's there?\n"  //user says this (or something)
-            + "To.\n"           //setup: server sends in response to new GET with string
-            + "To who?\n"       //user says this (or something)
-            + "To WHOM.");      //punchline: server sends in response to new GET with string
+         expect(resp.status).to.eql(200);
+          expect(resp.body.msg).to.eql("Joke #1\nKnock knock.\n");
+          expect(resp.body.meta).to.eql(1);
+          done();
+        });
+    });
+
+    it("should be able to respond to set up the joke", function(done) {
+      chai.request(url)
+        .post('joke/who')
+        .send({msg: "Who's there?"})
+        .end(function(err, resp) {
+          expect(err).to.eql(null);
+          expect(resp.status).to.eql(200);
+          expect(resp.body.msg).to.eql("Who's there?\nTo.\n");
+          expect(resp.body.meta).to.eql(1);
+          done();
+        });
+    });
+
+    it("should be able to tell the punchline", function(done) {
+      chai.request(url)
+        .post('joke/punchline')
+        .send({msg: "To who?"})
+        .end(function(err, resp) {
+          expect(err).to.eql(null);
+          expect(resp.status).to.eql(200);
+          expect(resp.body.msg).to.eql("To who?\nTo WHOM.");
+          expect(resp.body.meta).to.eql(1);
           done();
         })
-    })
+    });
   });
 });
