@@ -10,6 +10,7 @@
 var mongoose = require('mongoose');
 
 var handleError = require(__dirname + '/../lib/handle_error');
+var Counter = require(__dirname + '/counter');
 
 /**
  * The joke schema is used to store jokes given by users.
@@ -33,6 +34,18 @@ var jokeSchema = new mongoose.Schema({
 });
 
 //validation: make setup and punchline initial capped; case-insensitive, no-punctuation validation
+
+jokeSchema.pre('save', function(next) {
+  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1} }, function(err, counter)   {
+    debugger;
+    if(err) {
+      return next(err);
+    }
+
+    this.ID = counter.seq;
+    next();
+  }.bind(this));
+});
 
 /************** METHODS ******************/
 //respond with setups and punchlines, include author?

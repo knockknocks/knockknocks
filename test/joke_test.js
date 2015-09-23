@@ -7,12 +7,23 @@ chai.use(chaiHttp);
 var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
+var Counter = require(__dirname + '/../models/counter');
 
 require(__dirname + '/../server.js');
 var kkPORT = (process.env.PORT || 3000);
 var jokeURL = 'localhost:' + kkPORT;
 
 describe("the joke resource", function() {
+  before(function(done) {
+    var jokeCounter = new Counter({_id: 'entityId'});
+    jokeCounter.save(function(err, data) {
+      if(err) {
+        throw err;
+      }
+      done();
+    });
+  });
+
   after(function(done) {
     mongoose.connection.db.dropDatabase(function(err) {
       if(err) {
@@ -60,7 +71,6 @@ describe("the joke resource", function() {
   describe("routes that need a joke in the database", function() {
     before(function(done) {
       var testJoke = new Joke({
-        ID: 1,
         setup: "To",
         punchline: "To WHOM",
         author: "admin"
