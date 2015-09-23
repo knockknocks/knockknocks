@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
 
-var kkServer = require(__dirname + '/../server.js');
+require(__dirname + '/../server.js');
 var kkPORT = (process.env.PORT || 3000);
 var jokeURL = 'localhost:' + kkPORT;
 

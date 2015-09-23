@@ -9,6 +9,8 @@
 
 var mongoose = require('mongoose');
 
+var handleError = require(__dirname + '/../lib/handle_error');
+
 /**
  * The joke schema is used to store jokes given by users.
  * @prop  {string}  setup       
@@ -39,13 +41,12 @@ jokeSchema.methods.generateToken = function() {
   return this.ID;
 };
 
-jokeSchema.methods.updateRating = function(latestRating) {
+jokeSchema.methods.updateRating = function(latestRating, resp) {
   var oldTotalRating = this.rating * this.numberOfRatings;
   this.numberOfRatings++;
   this.rating = (oldTotalRating + latestRating) / this.numberOfRatings;
-  this.save(function(err, data) {
+  this.save(function(err) {
     if(err) {
-      debugger;
       return handleError(err, resp);
     }
   });

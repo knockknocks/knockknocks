@@ -21,7 +21,10 @@ var userSchema = new mongoose.Schema({
 
 userSchema.methods.generateHash = function(password, callback) {
   bcrypt.hash(password, 10, function(err, hash) {
-    if (err) return callback(err);
+    if (err) {
+      return callback(err);
+    }
+    
     this.basic.password = hash;
     callback(null, hash);
   }.bind(this));

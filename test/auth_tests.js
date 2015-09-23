@@ -55,11 +55,17 @@ describe('auth', function() {
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
       user.generateHash('testpass2', function(err, resp) {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         user.save(function(err, data) {
-          if (err) throw err;
+          if (err) {
+            throw err;
+          }
           user.generateToken(function(err, token) {
-            if (err) throw err;
+            if (err) {
+              throw err;
+            }
             this.token = token;
             done();
           }.bind(this));
@@ -85,7 +91,7 @@ describe('auth', function() {
       .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(resp.body.token).to.not.exist;
+        expect(resp.body.token).to.eql(undefined);
         done();
       });
     });
@@ -97,7 +103,7 @@ describe('auth', function() {
       .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(resp.body.token).to.not.exist;
+        expect(resp.body.token).to.eql(undefined);
         done();
       });
     });

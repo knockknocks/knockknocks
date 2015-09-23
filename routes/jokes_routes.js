@@ -52,7 +52,7 @@ jokeRouter.post('/rate/*', jsonParser, function(req, resp) {
       return handleError(err, resp);
     }
 
-    data.updateRating(req.body.rating);
+    data.updateRating(req.body.rating, resp);
 
     //*******TODO: update user's unseen list*******
 
@@ -90,7 +90,7 @@ jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
     var newJoke = new Joke(req.body);
     newJoke.author = username;
     
-    newJoke.save(function(err, data) {
+    newJoke.save(function(err) {
       if(err) {
         return handleError(err, resp);
       }
