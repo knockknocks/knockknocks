@@ -10,6 +10,7 @@ var Joke = require(__dirname + '/../models/joke');
 var Counter = require(__dirname + '/../models/counter');
 var User = require(__dirname + '/../models/user');
 
+process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
 require(__dirname + '/../server.js');
 var kkPORT = (process.env.PORT || 3000);
 var jokeURL = 'localhost:' + kkPORT;

@@ -107,11 +107,9 @@ jokeRouter.post('/joke/setup', jsonParser, function(req, resp) {
 jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
   var username = "me";
   var newJoke = new Joke(req.body);
-  newJoke.indexText();
-  debugger;
 
   //see if we already heard that one
-  Joke.findOne({searchableText: newJoke.searchableText}, function(err, data) {
+  Joke.findOne({searchableText: newJoke.indexText()}, function(err, data) {
     if(err) {
       return handleError(err, resp);
     }

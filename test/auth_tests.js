@@ -4,13 +4,15 @@ var chai = require('chai');
 var chaihttp = require('chai-http');
 chai.use(chaihttp);
 var expect = chai.expect;
-process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
-require(__dirname + '/../server');
+var mongoose = require('mongoose');
+
 var User = require(__dirname + '/../models/user');
 var eatauth = require(__dirname + '/../lib/eat_auth');
 var httpBasic = require(__dirname + '/../lib/http_basic');
-var mongoose = require('mongoose');
+var Counter = require(__dirname + '/../models/counter');
 
+process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
+require(__dirname + '/../server');
 var kkPORT = (process.env.PORT || 3000);
 var apiURL = 'localhost:' + kkPORT;
 
@@ -33,6 +35,16 @@ describe('httpBasic', function() {
 describe('auth', function() {
   after(function(done) {
     mongoose.connection.db.dropDatabase(function() {
+      done();
+    });
+  });
+
+  before(function(done) {
+    var jokeCounter = new Counter({_id: 'entityId'});
+    jokeCounter.save(function(err, data) {
+      if(err) {
+        throw err;
+      }
       done();
     });
   });

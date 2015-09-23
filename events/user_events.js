@@ -1,6 +1,7 @@
 'use strict';
 
 var EE = require('events').EventEmitter;
+
 var handleError = require(__dirname + '/../lib/handle_error');
 
 var userEvents = new EE();
@@ -29,6 +30,9 @@ userEvents.on("user_found", function(req, resp, user) {
 });
 
 userEvents.on("user_signed_in", function(resp, user) {
+  user.updateUnseenArray();
+
+  //create and send token to signed-in user
   user.generateToken(function(err, token) {
     if (err) {
       return handleError(err, resp);
