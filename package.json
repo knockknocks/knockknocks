@@ -1,29 +1,44 @@
 {
   "name": "knockknocks",
   "version": "0.1.0",
-  "description": "a knock knock joke server",
+  "description": "A knock-knock server. You tell it jokes, it tells you jokes. It's fun!",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test"
+    "test": "mocha test"
   },
+  "keywords": [
+    "knock",
+    "joke",
+    "fun"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jalleng/knockknocks.git"
+    "url": "git+https://github.com/knockknocks/knockknocks.git"
   },
-  "author": "JAG AAK AMN",
-  "license": "MIT",
+  "author": "knockknocks",
+  "contributors": [
+    {
+      "name": "andrewmnelson"
+    },
+    {
+      "name": "jalleng"
+    },
+    {
+      "name": "RyuGuardian"
+    }
+  ],
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jalleng/knockknocks/issues"
+    "url": "https://github.com/knockknocks/knockknocks/issues"
   },
-  "homepage": "https://github.com/jalleng/knockknocks#readme",
+  "homepage": "https://github.com/knockknocks/knockknocks#readme",
   "dependencies": {
     "bcrypt": "^0.8.5",
-    "body-parser": "^1.13.3",
+    "body-parser": "^1.14.0",
     "eat": "^0.1.1",
-    "email-verification": "^0.1.9",
     "express": "^4.13.3",
-    "mailgun-validate-email": "^2.0.1",
-    "mongoose": "^4.1.7"
+    "http": "0.0.0",
+    "mongoose": "^4.1.8"
   },
   "devDependencies": {
     "chai": "^3.2.0",
