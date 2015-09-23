@@ -5,7 +5,7 @@ var chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 var expect = chai.expect;
 
-var kkServer = require(__dirname + '/../server.js');
+require(__dirname + '/../server.js');
 
 var kkPORT = ':' + (process.env.PORT || 3000);
 var kkROOT = '/' + (process.env.KKROOT || '');
