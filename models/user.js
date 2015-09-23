@@ -4,9 +4,11 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var eat = require('eat');
 
+var emailRegex = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+
 var userSchema = new mongoose.Schema({
   username: {type: String, unique: true},
-  email: {type: String, unique: true},
+  email: {type: String, unique: true, match: emailRegex},
   basic: {
     username: String,
     password: String
@@ -19,7 +21,10 @@ var userSchema = new mongoose.Schema({
 
 userSchema.methods.generateHash = function(password, callback) {
   bcrypt.hash(password, 10, function(err, hash) {
-    if (err) return callback(err);
+    if (err) {
+      return callback(err);
+    }
+    
     this.basic.password = hash;
     callback(null, hash);
   }.bind(this));

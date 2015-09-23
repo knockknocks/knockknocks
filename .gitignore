@@ -1,5 +1,6 @@
-node_modules
-db/**
+node_modules/
+db/**/*
+out/**
 gulpfile.js
 .DS_Store
 **/.DS_Store

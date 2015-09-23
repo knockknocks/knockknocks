@@ -11,6 +11,9 @@ var eatauth = require(__dirname + '/../lib/eat_auth');
 var httpBasic = require(__dirname + '/../lib/http_basic');
 var mongoose = require('mongoose');
 
+var kkPORT = (process.env.PORT || 3000);
+var apiURL = 'localhost:' + kkPORT;
+
 describe('httpBasic', function() {
   it('should be able to parse http basic auth', function() {
     var req = {
@@ -35,12 +38,12 @@ describe('auth', function() {
   });
 
   it('should be able to create a user', function(done) {
-    chai.request('localhost:3000/api')
+    chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser1', password: 'testpass1', email: 'testuser1@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(err).to.eql(null);
-        expect(res.body.token).to.have.length.above(0);
+        expect(resp.body.token).to.have.length.above(0);
         done();
       });
   });
@@ -51,12 +54,18 @@ describe('auth', function() {
       user.email = 'testuser2@test.com';
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
-      user.generateHash('testpass2', function(err, res) {
-        if (err) throw err;
+      user.generateHash('testpass2', function(err, resp) {
+        if (err) {
+          throw err;
+        }
         user.save(function(err, data) {
-          if (err) throw err;
+          if (err) {
+            throw err;
+          }
           user.generateToken(function(err, token) {
-            if (err) throw err;
+            if (err) {
+              throw err;
+            }
             this.token = token;
             done();
           }.bind(this));
@@ -65,36 +74,36 @@ describe('auth', function() {
     });
 
     it('should be able to sign in', function(done) {
-      chai.request('localhost:3000/api')
+      chai.request(apiURL)
         .get('/signin')
         .auth('testuser2', 'testpass2')
-        .end(function(err, res) {
+        .end(function(err, resp) {
           expect(err).to.eql(null);
-          expect(res.body.token).to.have.length.above(0);
+          expect(resp.body.token).to.have.length.above(0);
           done();
         });
     });
 
     it('should not be able to create a user with a duplicate name', function(done) {
-      chai.request('localhost:3000/api')
+      chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser2', password: 'testpass3', email: 'testuser3@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(res.body.token).to.not.exist;
+        expect(resp.body.token).to.eql(undefined);
         done();
       });
     });
 
     it('should not be able to create a user with a duplicate email', function(done) {
-      chai.request('localhost:3000/api')
+      chai.request(apiURL)
       .post('/signup')
       .send({username: 'testuser3', password: 'testpass4', email: 'testuser2@test.com'})
-      .end(function(err, res) {
+      .end(function(err, resp) {
         expect(true).to.eql(true);
         expect(err).to.eql(null);
-        expect(res.body.token).to.not.exist;
+        expect(resp.body.token).to.eql(undefined);
         done();
       });
     });
