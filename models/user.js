@@ -12,8 +12,8 @@ var userSchema = new mongoose.Schema({
   basic: {
     username: String,
     password: String
-  }
-
+  },
+  validEmail: {type: Boolean, default: false}
   // unseen_jokes: Array,  //contains IDs of unseen jokes
   // jokeIndex: Number, // keeps track of highest ID added to unseen jokes
   // adult: Boolean  //for allowing adult jokes; not in use yet
@@ -24,7 +24,7 @@ userSchema.methods.generateHash = function(password, callback) {
     if (err) {
       return callback(err);
     }
-    
+
     this.basic.password = hash;
     callback(null, hash);
   }.bind(this));

@@ -19,15 +19,16 @@ app.listen(port, function() {
   kkLog('knockknocks server listening on ' + port + ' at ' + new Date().toString());
 });
 
-var pubkey = 'api:key-79950cd57663d6ddced487967c96de02';
 
 
-var validator = require('mailgun-validate-email')(pubkey)
-validator("jallengerber@gmail.com", function (err, result){
-  if(err) {
-    console.log('errorrrrrrr', err);// email was not valid
-  } else {
-    console.log('result is', result);
-    // register the person for your service etc.
-  }
-});
+
+
+
+
+
+
+
+
+
+
+

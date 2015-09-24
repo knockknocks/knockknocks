@@ -6,3 +6,4 @@ gulpfile.js
 **/.DS_Store
 index.html
 validator.js
+routes/verify_routes.js
