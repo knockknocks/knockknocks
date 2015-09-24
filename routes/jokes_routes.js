@@ -1,20 +1,33 @@
+/**
+ * @fileOverview
+    Establishes the routes to interact with the joke database.
+ * @author
+    Austin King
+ */
+
 'use strict';
 
 var express = require('express');
 var jsonParser = require('body-parser').json();
+
 var Joke = require(__dirname + '/../models/joke');
 var handleError = require(__dirname + '/../lib/handle_error');
 
 var jokeRouter = module.exports = exports = express.Router();
 
+/**
+ * @name
+    GET /knockknock
+ * @method
+    Logged-in users looking to be told a joke go to the /knockknock endpoint.\n
+    This path finds a joke the user hasn't seen yet and responds with the joke ID and "Knock knock."\n
+    It also sends back a joke token so we know which joke we're telling between requests and responses.
+ */
 jokeRouter.get('/knockknock', function(req, resp) {
-  //we need multiple GETs and POSTs to take care of back-and-forth telling of jokes
-  
-  //retrieve joke for session, show ID and open with "Knock knock."
   //when finding a joke, need to find one within the user's not_seen array
   Joke.findOne({ID: 1}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
     
     var jokeText = "Joke #" + data.ID + "\n";
@@ -24,10 +37,16 @@ jokeRouter.get('/knockknock', function(req, resp) {
   });
 });
 
+/**
+ * @method
+    Logged-in users go to the /whosthere endpoint to ask who's knocking.\n
+    This path responds with the setup.\n
+    It uses the joke token to find which joke we're telling and sends it back again.
+ */
 jokeRouter.get('/whosthere/*', function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     var jokeText = data.setup + ".\n";
@@ -35,26 +54,39 @@ jokeRouter.get('/whosthere/*', function(req, resp) {
   });
 });
 
+/**
+ * @method
+    Logged-in users go to the /punchline endpoint to finish hearing the joke.\n
+    This path responds with the punchline.\n
+    It uses the joke token to find which joke we're telling and sends it back again.\n
+    The user's unseen list will also be updated.
+ */
 jokeRouter.get('/punchline/*', function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
+
+    //*******TODO: update user's unseen list (pop joke off)*******
 
     var jokeText = data.punchline + ".";
     resp.json({msg: jokeText, token: data.generateToken()});
   });
 });
 
+/**
+ * @method
+    Logged in users go to the /rate endpoint after hearing a joke and rating it.\n
+    This path responds with the rating of the joke, after calculating the user's input.\n
+    It uses the joke token to find which joke we told and update its rating accordingly.
+ */
 jokeRouter.post('/rate/*', jsonParser, function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     data.updateRating(req.body.rating, resp);
-
-    //*******TODO: update user's unseen list*******
 
     resp.json({msg: "The average rating for this joke is " + data.rating.toFixed(1) + " knocks!\n"});
   });
@@ -75,11 +107,12 @@ jokeRouter.post('/joke/setup', jsonParser, function(req, resp) {
 //user sends punchline; joke gets saved
 jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
   var username = "me";
+  var newJoke = new Joke(req.body);
 
   //see if we already heard that one
-  Joke.findOne({setup: req.body.setup, punchline: req.body.punchline}, function(err, data) {
+  Joke.findOne({searchableText: newJoke.indexText()}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     if(data !== null) {
@@ -87,17 +120,13 @@ jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
     }
 
     //save if we haven't heard it; include username as author
-    var newJoke = new Joke(req.body);
     newJoke.author = username;
-    
     newJoke.save(function(err) {
       if(err) {
-        return handleError(err, resp);
+        return handleError(err, resp);  //err = database error; should be shown as server error (500)
       }
 
       resp.json({msg: "That's a new one!"});
     });
   });
 });
-
-
