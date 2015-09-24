@@ -24,7 +24,6 @@ userSchema.methods.generateHash = function(password, callback) {
     if (err) {
       return callback(err);
     }
-
     this.basic.password = hash;
     callback(null, hash);
   }.bind(this));

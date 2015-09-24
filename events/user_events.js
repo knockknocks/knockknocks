@@ -2,6 +2,7 @@
 
 var EE = require('events').EventEmitter;
 var handleError = require(__dirname + '/../lib/handle_error');
+
 var verifier = require(__dirname + '/../lib/verify');
 
 var userEvents = new EE();

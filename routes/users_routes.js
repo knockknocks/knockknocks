@@ -19,12 +19,10 @@ usersRouter.post('/signup', jsonParser, function(req, resp) {
   newUser.basic.username = req.body.username;
   newUser.username = req.body.username;
   newUser.email = req.body.email;
-
   newUser.generateHash(req.body.password, function(err, hash) {
     if (err) {
       return resp.send("Meow!, Could not authenticat");
     }
-
     userEvents.emit("hash_generated", resp, newUser, hash);
   });
 });
@@ -59,6 +57,7 @@ usersRouter.get('/verify/:clickback', function(req, resp) {
     return ('Account validated!');
   })
   resp.end();
+
 });
 
 
