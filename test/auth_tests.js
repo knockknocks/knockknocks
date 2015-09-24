@@ -41,7 +41,7 @@ describe('auth', function() {
 
   before(function(done) {
     var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err, data) {
+    jokeCounter.save(function(err, data) {  /* jshint ignore:line */
       if(err) {
         throw err;
       }
@@ -66,11 +66,11 @@ describe('auth', function() {
       user.email = 'testuser2@test.com';
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
-      user.generateHash('testpass2', function(err, resp) {
+      user.generateHash('testpass2', function(err, resp) {  /* jshint ignore:line */
         if (err) {
           throw err;
         }
-        user.save(function(err, data) {
+        user.save(function(err, data) {  /* jshint ignore:line */
           if (err) {
             throw err;
           }

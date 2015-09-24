@@ -9,6 +9,7 @@
 
 var express = require('express');
 var jsonParser = require('body-parser').json();
+
 var Joke = require(__dirname + '/../models/joke');
 var handleError = require(__dirname + '/../lib/handle_error');
 
@@ -26,7 +27,7 @@ jokeRouter.get('/knockknock', function(req, resp) {
   //when finding a joke, need to find one within the user's not_seen array
   Joke.findOne({ID: 1}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
     
     var jokeText = "Joke #" + data.ID + "\n";
@@ -45,7 +46,7 @@ jokeRouter.get('/knockknock', function(req, resp) {
 jokeRouter.get('/whosthere/*', function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     var jokeText = data.setup + ".\n";
@@ -63,10 +64,10 @@ jokeRouter.get('/whosthere/*', function(req, resp) {
 jokeRouter.get('/punchline/*', function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
-    //*******TODO: update user's unseen list*******
+    //*******TODO: update user's unseen list (pop joke off)*******
 
     var jokeText = data.punchline + ".";
     resp.json({msg: jokeText, token: data.generateToken()});
@@ -82,7 +83,7 @@ jokeRouter.get('/punchline/*', function(req, resp) {
 jokeRouter.post('/rate/*', jsonParser, function(req, resp) {
   Joke.findOne({ID: req.params[0]}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     data.updateRating(req.body.rating, resp);
@@ -111,7 +112,7 @@ jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
   //see if we already heard that one
   Joke.findOne({searchableText: newJoke.indexText()}, function(err, data) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp);  //err = database error; should be shown as server error (500)
     }
 
     if(data !== null) {
@@ -122,7 +123,7 @@ jokeRouter.post('/joke/punchline', jsonParser, function(req, resp) {
     newJoke.author = username;
     newJoke.save(function(err) {
       if(err) {
-        return handleError(err, resp);
+        return handleError(err, resp);  //err = database error; should be shown as server error (500)
       }
 
       resp.json({msg: "That's a new one!"});

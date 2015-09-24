@@ -23,7 +23,7 @@ var userSchema = new mongoose.Schema({
 
 userSchema.methods.generateHash = function(password, callback) {
   bcrypt.hash(password, 10, function(err, hash) {
-    if (err) {
+    if(err) {
       return callback(err);
     }
     
@@ -42,16 +42,24 @@ userSchema.methods.generateToken = function(callback) {
 
 userSchema.methods.updateUnseenArray = function(callback) {
   Counter.findOne({}, function(err, data) {
+    if(err) {
+      return callback(err);
+    }
     //only do something if user's index is less than the counter (counter === newest joke's ID) (this skips if there are no jokes)
     if(this.jokeIndex < data.seq) {
-      var newestJokes = [];
       for(var i = this.jokeIndex + 1; i <= data.seq; i++) {
         this.unseenJokes.push(i);
       }
+
       this.jokeIndex = data.seq;
-    }      
-  });
+      this.save(function(err) {
+        if(err) {
+          return callback(err);
+        }
+        callback();
+      });
+    }
+  }.bind(this));
 };
 
 module.exports = mongoose.model('User', userSchema);
-

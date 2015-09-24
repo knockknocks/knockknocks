@@ -38,7 +38,6 @@ var jokeSchema = new mongoose.Schema({
 
 jokeSchema.pre('save', function(next) {
   Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1}}, function(err, counter) {
-    debugger;
     if(err) {
       return next(err);
     }

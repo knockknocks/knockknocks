@@ -27,7 +27,7 @@ describe("the joke resource", function() {
 
   before(function(done) {
     var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err, data) {
+    jokeCounter.save(function(err, data) {  /* jshint ignore:line */
       if(err) {
         throw err;
       }
@@ -35,28 +35,28 @@ describe("the joke resource", function() {
     });
   });
 
-  before(function(done) {
-    var user = new User();
-    user.email = 'tester@test.com';
-    user.username = user.basic.username = 'tester';
-    user.generateHash('testpass123', function(err, resp) {
-      if (err) {
-        throw err;
-      }
-      user.save(function(err, data) {
-        if (err) {
-          throw err;
-        }
-        user.generateToken(function(err, token) {
-          if (err) {
-            throw err;
-          }
-          this.token = token;
-          done();
-        }.bind(this));
-      }.bind(this));
-    }.bind(this));
-  });
+  // before(function(done) {
+  //   var user = new User();
+  //   user.email = 'tester@test.com';
+  //   user.username = user.basic.username = 'tester';
+  //   user.generateHash('testpass123', function(err, resp) {  /* jshint ignore:line */
+  //     if (err) {
+  //       throw err;
+  //     }
+  //     user.save(function(err, data) {  /* jshint ignore:line */
+  //       if (err) {
+  //         throw err;
+  //       }
+  //       user.generateToken(function(err, token) {
+  //         if (err) {
+  //           throw err;
+  //         }
+  //         this.token = token;
+  //         done();
+  //       }.bind(this));
+  //     }.bind(this));
+  //   }.bind(this));
+  // });
 
   it("should respond to 'Knock knock.'", function(done) {
     chai.request(jokeURL)
@@ -111,11 +111,11 @@ describe("the joke resource", function() {
       }.bind(this));
     });
 /*
-"Knock knock.\n"    //ideally: server sends this on get                           (server starts a joke)
-+ "Who's there?\n"  //user says this (or something)                               (user instigates joke)
-+ "To.\n"           //setup: server sends in response to new GET with string      (server sends setup)
-+ "To who?\n"       //user says this (or something)                               (user consents to joke)
-+ "To WHOM.");      //punchline: server sends in response to new GET with string  (server completes joke: remove from user's unseen list)
+"Knock knock.\n"  //ideally: server sends this on get                           (server starts a joke)
+"Who's there?\n"  //user says this (or something)                               (user instigates joke)
+"To.\n"           //setup: server sends in response to new GET with string      (server sends setup)
+"To who?\n"       //user says this (or something)                               (user consents to joke)
+"To WHOM."        //punchline: server sends in response to new GET with string  (server completes joke: remove from user's unseen list)
 */
     it("should be able to tell a joke", function(done) {
       chai.request(jokeURL)

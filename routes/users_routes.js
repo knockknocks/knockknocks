@@ -17,8 +17,8 @@ usersRouter.post('/signup', jsonParser, function(req, resp) {
   newUser.email = req.body.email;
   
   newUser.generateHash(req.body.password, function(err, hash) {
-    if (err) {
-      return resp.send("Meow!, Could not authenticat");
+    if(err) {
+      return handleError(err, resp) //err = bcrypt hashing error; would be shown as server error (500)
     }
     
     userEvents.emit("hash_generated", resp, newUser, hash);
@@ -27,10 +27,10 @@ usersRouter.post('/signup', jsonParser, function(req, resp) {
 
 usersRouter.get('/signin', httpBasic, function(req, resp) {  
   User.findOne({'basic.username': req.auth.username}, function(err, user) {
-    if (err) {
-      return handleError(err, resp);
+    if(err) {
+      return handleError(err, resp);  //err = database error; would be shown as server error (500)
     }
-    if (!user) {
+    if(!user) {
       return resp.status(401).json({msg: 'Meow! Could not authenticat!'});
     }
 
