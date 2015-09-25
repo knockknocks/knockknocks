@@ -3,7 +3,7 @@
     Defines the joke schema.
  * @author
     Austin King
-  */
+ */
 
 'use strict';
 
@@ -27,6 +27,7 @@ var jokeSchema = new mongoose.Schema({
   ID: {type: Number, unique: true},
   setup: {type: String, trim: true},
   punchline: {type: String, trim: true},
+  searchableText: String,
   author: String,
   rating: {type: Number, min: 1, max: 5, default: 1}, //one of the first stretch goals
   numberOfRatings: {type: Number, default: 0}
@@ -36,8 +37,7 @@ var jokeSchema = new mongoose.Schema({
 //validation: make setup and punchline initial capped; case-insensitive, no-punctuation validation
 
 jokeSchema.pre('save', function(next) {
-  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1} }, function(err, counter)   {
-    debugger;
+  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1}}, function(err, counter) {
     if(err) {
       return next(err);
     }
@@ -63,6 +63,11 @@ jokeSchema.methods.updateRating = function(latestRating, resp) {
       return handleError(err, resp);
     }
   });
+};
+
+jokeSchema.methods.indexText = function() {
+  return this.searchableText = (this.setup.toLowerCase().split(/[^a-z0-9]/).join('')
+    + this.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
 };
 
 module.exports = mongoose.model('Joke', jokeSchema);

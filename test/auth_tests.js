@@ -4,13 +4,15 @@ var chai = require('chai');
 var chaihttp = require('chai-http');
 chai.use(chaihttp);
 var expect = chai.expect;
-process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
-require(__dirname + '/../server');
+var mongoose = require('mongoose');
+
 var User = require(__dirname + '/../models/user');
 var eatauth = require(__dirname + '/../lib/eat_auth');
 var httpBasic = require(__dirname + '/../lib/http_basic');
-var mongoose = require('mongoose');
+var Counter = require(__dirname + '/../models/counter');
 
+process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
+require(__dirname + '/../server');
 var kkPORT = (process.env.PORT || 3000);
 var apiURL = 'localhost:' + kkPORT;
 
@@ -37,6 +39,16 @@ describe('auth', function() {
     });
   });
 
+  before(function(done) {
+    var jokeCounter = new Counter({_id: 'entityId'});
+    jokeCounter.save(function(err, data) {  /* jshint ignore:line */
+      if(err) {
+        throw err;
+      }
+      done();
+    });
+  });
+
   it('should be able to create a user', function(done) {
     chai.request(apiURL)
       .post('/signup')
@@ -54,11 +66,11 @@ describe('auth', function() {
       user.email = 'testuser2@test.com';
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
-      user.generateHash('testpass2', function(err, resp) {
+      user.generateHash('testpass2', function(err, resp) {  /* jshint ignore:line */
         if (err) {
           throw err;
         }
-        user.save(function(err, data) {
+        user.save(function(err, data) {  /* jshint ignore:line */
           if (err) {
             throw err;
           }
