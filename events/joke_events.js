@@ -1,7 +1,6 @@
 var EE = require('events').EventEmitter;
 
 var Joke = require(__dirname + '/../models/joke');
-//var User = require(__dirname + '/../models/user');
 var handleError = require(__dirname + '/../lib/handle_error');
 
 var jokeEvents = new EE();
@@ -12,7 +11,7 @@ jokeEvents.on('user_knocked', function(resp, user, userToken) {
     
     Joke.findOne({ID: randomID}, function(err, data) {
       if(err) {
-        return handleError(err, resp);  //err = database error; should be shown as server error (500)
+        return handleError(err, resp, 500);  //err = database error; show as server error (500)
       }
 
       var jokeText = "Joke #" + data.ID + "\n";
@@ -29,7 +28,7 @@ jokeEvents.on('user_knocked', function(resp, user, userToken) {
     user.jokeIndex = 0;
     user.updateUnseenArray(function(err) {
       if(err) {
-        return handleError(err, resp);  //err = database error; should be shown as server error (500)
+        return handleError(err, resp, 500);  //err = database error; show as server error (500)
       }
 
       resp.json({msg:

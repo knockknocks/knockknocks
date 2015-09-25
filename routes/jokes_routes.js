@@ -39,13 +39,15 @@ jokeRouter.post('/knockknock', jsonParser, eatAuth, function(req, resp) {
 jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
   Joke.findOne({ID: req.body.jtoken}, function(err, data) {
     if(err) {
-      return handleError(err, resp);  //err = database error; should be shown as server error (500)
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
     var jokeText = data.setup + ".\n";
-    resp.json({msg: jokeText,
+    resp.json({
+      msg: jokeText,
       token: req.body.token,
-      jtoken: data.generateToken()});  //also send token
+      jtoken: data.generateToken()
+    });
   });
 });
 
@@ -59,19 +61,21 @@ jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
 jokeRouter.post('/punchline/', jsonParser, eatAuth, function(req, resp) {
   Joke.findOne({ID: req.body.jtoken}, function(err, data) {
     if(err) {
-      return handleError(err, resp);  //err = database error; should be shown as server error (500)
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
     req.user.unseenPop(data.ID, function(err) {
       if(err) {
-        return handleError(err, resp);
+        return handleError(err, resp, 500);  //err = database error; show as server error (500)
       }
     });
 
     var jokeText = data.punchline + ".";
     resp.json({
-      msg: jokeText, token: req.body.token,
-      jtoken: data.generateToken()});
+      msg: jokeText, 
+      token: req.body.token,
+      jtoken: data.generateToken()
+    });
   });
 });
 
@@ -84,7 +88,7 @@ jokeRouter.post('/punchline/', jsonParser, eatAuth, function(req, resp) {
 jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
   Joke.findOne({ID: req.body.jtoken}, function(err, data) {
     if(err) {
-      return handleError(err, resp);  //err = database error; should be shown as server error (500)
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
     data.updateRating(req.body.rating, resp);
@@ -98,7 +102,7 @@ jokeRouter.post('/joke', jsonParser, eatAuth, function(req, resp) {
   resp.json({msg: "Who's there?\n", token: req.body.token});
 });
 
-//user sends setup for joke:
+//user sends setup for joke
 jokeRouter.post('/joke/setup', jsonParser, eatAuth, function(req, resp) {
   resp.json({msg: req.body.setup + " who?\n", token: req.body.token});
 });
@@ -110,7 +114,7 @@ jokeRouter.post('/joke/punchline', jsonParser, eatAuth, function(req, resp) {
   //see if we already heard that one
   Joke.findOne({searchableText: newJoke.indexText()}, function(err, data) {
     if(err) {
-      return handleError(err, resp);  //err = database error; should be shown as server error (500)
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
     if(data !== null) {
@@ -121,7 +125,7 @@ jokeRouter.post('/joke/punchline', jsonParser, eatAuth, function(req, resp) {
     newJoke.author = req.user.username;
     newJoke.save(function(err) {
       if(err) {
-        return handleError(err, resp);  //err = database error; should be shown as server error (500)
+        return handleError(err, resp, 500);  //err = database error; show as server error (500)
       }
 
       resp.json({msg: "Thanks, " + req.user.username + "! That's a new one!"});

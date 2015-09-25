@@ -48,8 +48,6 @@ jokeSchema.pre('save', function(next) {
 });
 
 /************** METHODS ******************/
-//respond with setups and punchlines, include author?
-//respond to setups and punchlines
 jokeSchema.methods.generateToken = function() {
   return this.ID;
 };
@@ -60,7 +58,7 @@ jokeSchema.methods.updateRating = function(latestRating, resp) {
   this.rating = (oldTotalRating + latestRating) / this.numberOfRatings;
   this.save(function(err) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
   });
 };
