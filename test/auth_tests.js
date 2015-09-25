@@ -67,15 +67,15 @@ describe('auth', function() {
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
       user.generateHash('testpass2', function(err, resp) {  /* jshint ignore:line */
-        if (err) {
+        if(err) {
           throw err;
         }
         user.save(function(err, data) {  /* jshint ignore:line */
-          if (err) {
+          if(err) {
             throw err;
           }
           user.generateToken(function(err, token) {
-            if (err) {
+            if(err) {
               throw err;
             }
             this.token = token;

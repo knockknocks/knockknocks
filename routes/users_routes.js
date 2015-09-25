@@ -18,7 +18,7 @@ usersRouter.post('/signup', jsonParser, function(req, resp) {
   
   newUser.generateHash(req.body.password, function(err, hash) {
     if(err) {
-      return handleError(err, resp) //err = bcrypt hashing error; would be shown as server error (500)
+      return handleError(err, resp); //err = bcrypt hashing error; would be shown as server error (500)
     }
     
     userEvents.emit("hash_generated", resp, newUser, hash);

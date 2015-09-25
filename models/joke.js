@@ -27,22 +27,22 @@ var jokeSchema = new mongoose.Schema({
   ID: {type: Number, unique: true},
   setup: {type: String, trim: true},
   punchline: {type: String, trim: true},
-  searchableText: String,
+  searchableText: {type: String, unique: true},
   author: String,
   rating: {type: Number, min: 1, max: 5, default: 1}, //one of the first stretch goals
-  numberOfRatings: {type: Number, default: 0}
+  numberOfRatings: {type: Number, min: 0, default: 0}
   //, adult_only: Boolean {default: true} //not in use right away
 });
 
 //validation: make setup and punchline initial capped; case-insensitive, no-punctuation validation
 
 jokeSchema.pre('save', function(next) {
-  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1}}, function(err, counter) {
+  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: {seq: 1}}, function(err, counter) {
     if(err) {
       return next(err);
     }
 
-    this.ID = counter.seq;
+    this.ID = counter.seq + 1;
     next();
   }.bind(this));
 });

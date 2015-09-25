@@ -56,10 +56,20 @@ userSchema.methods.updateUnseenArray = function(callback) {
         if(err) {
           return callback(err);
         }
-        callback();
+        callback(null);
       });
     }
   }.bind(this));
+};
+
+userSchema.methods.unseenPop = function(jokeID, callback) {
+  this.unseenJokes.splice(this.unseenJokes.indexOf(jokeID), 1);
+  this.save(function(err) {
+    if(err) {
+      return callback(err);
+    }
+    callback(null);
+  });
 };
 
 module.exports = mongoose.model('User', userSchema);

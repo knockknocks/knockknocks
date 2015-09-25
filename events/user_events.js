@@ -7,7 +7,7 @@ var handleError = require(__dirname + '/../lib/handle_error');
 var userEvents = new EE();
 
 userEvents.on("hash_generated", function(resp, newUser) {
-  newUser.save(function(err, data) {
+  newUser.save(function(err) {
     if(err) {
       //this error would be a database error, should be 500?
       return resp.status(400).json({err:"Meow!, Could not authenticat"});
@@ -22,7 +22,7 @@ userEvents.on("user_found", function(req, resp, user) {
     if(err) {
       return handleError(err, resp);  //err = bcrypt compare error; would be shown as server error (500)
     }
-    if (!hashresp) {
+    if(!hashresp) {
       //this error seems correct
       return resp.status(401).json({msg: 'Meow! Could not authenticat!'});
     }
