@@ -89,7 +89,7 @@ jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
-    data.updateRating(req.body.rating, resp);
+    data.updateRating(req.body.rating);
 
     resp.json({msg: "The average rating for this joke is " + data.rating.average.toFixed(1) + " knocks!\n"});
   });

@@ -41,7 +41,7 @@ describe('auth', function() {
 
   before(function(done) {
     var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err, data) {  /* jshint ignore:line */
+    jokeCounter.save(function(err) {
       if(err) {
         throw err;
       }
