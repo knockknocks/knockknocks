@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt');
 var eat = require('eat');
 
 var Counter = require(__dirname + '/../models/counter');
+var counterEvents = require(__dirname + '/../events/counter_events');
 
 var emailRegex = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
 
@@ -47,8 +48,12 @@ userSchema.methods.updateUnseenArray = function(callback) {
     if(err) {
       return callback(err);
     }
+
+    if(!data) {
+      counterEvents.emit('first_user', this, callback);
+    }
     //only do something if user's index is less than the counter (counter === newest joke's ID) (this skips if there are no jokes)
-    if(this.unseen.index < data.seq) {
+    else if(this.unseen.index < data.seq) {
       for(var i = this.unseen.index + 1; i <= data.seq; i++) {
         this.unseen.jokes.push(i);
       }
