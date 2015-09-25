@@ -56,8 +56,8 @@ describe("user schema", function() {
         throw err;
       }
       expect(data.email).to.eql('aak@test.com');
-      expect(data.unseenJokes).to.have.length(0);
-      expect(data.jokeIndex).to.eql(0);
+      expect(data.unseen.jokes).to.have.length(0);
+      expect(data.unseen.index).to.eql(0);
       done();
     });
   });
@@ -65,8 +65,10 @@ describe("user schema", function() {
   describe("with jokes in database", function() {
     before(function(done) {
       var testJoke = new Joke({
-        setup: "To",
-        punchline: "To WHOM",
+        jokeText: {
+          setup: "To",
+          punchline: "To WHOM",
+        },
         author: "admin"
       });
       testJoke.indexText();
@@ -79,8 +81,10 @@ describe("user schema", function() {
     });
     before(function(done) {
       var testJoke2 = new Joke({
-        setup: "Old Lady",
-        punchline: "I didn't know you could yodel",
+        jokeText: {
+          setup: "Old Lady",
+          punchline: "I didn't know you could yodel",
+        },
         author: "admin"
       });
       testJoke2.indexText();
@@ -97,8 +101,8 @@ describe("user schema", function() {
         data.updateUnseenArray(function(err) {
           expect(err).to.eql(null);
           expect(data.email).to.eql('aak@test.com');
-          expect(data.unseenJokes).to.have.length(2);
-          expect(data.jokeIndex).to.eql(2);
+          expect(data.unseen.jokes).to.have.length(2);
+          expect(data.unseen.index).to.eql(2);
           done();
         });
       });
@@ -108,8 +112,8 @@ describe("user schema", function() {
       User.findOne({}, function(err, data) {
         data.unseenPop(1, function(err) {
           expect(err).to.eql(null);
-          expect(data.unseenJokes).to.have.length(1);
-          expect(data.unseenJokes[0]).to.eql(2);
+          expect(data.unseen.jokes).to.have.length(1);
+          expect(data.unseen.jokes[0]).to.eql(2);
           done();
         });
       });

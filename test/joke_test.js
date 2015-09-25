@@ -97,8 +97,10 @@ describe("the joke resource", function() {
   describe("routes that need a joke in the database", function() {
     before(function(done) {
       var testJoke = new Joke({
-        setup: "To",
-        punchline: "To WHOM",
+        jokeText: {
+          setup: "To",
+          punchline: "To WHOM",
+        },
         author: "admin"
       });
       testJoke.indexText();

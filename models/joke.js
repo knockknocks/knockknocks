@@ -25,12 +25,16 @@ var Counter = require(__dirname + '/counter');
  */
 var jokeSchema = new mongoose.Schema({
   ID: {type: Number, unique: true},
-  setup: {type: String, trim: true},
-  punchline: {type: String, trim: true},
-  searchableText: {type: String, unique: true},
+  jokeText: {
+    setup: {type: String, trim: true},
+    punchline: {type: String, trim: true},
+    searchable: {type: String, unique: true}
+  },
   author: String,
-  rating: {type: Number, min: 1, max: 5, default: 1}, //one of the first stretch goals
-  numberOfRatings: {type: Number, min: 0, default: 0}
+  rating: {
+    average: {type: Number, min: 1, max: 5, default: 1},
+    count: {type: Number, min: 0, default: 0}
+  }
   //, adult_only: Boolean {default: true} //not in use right away
 });
 
@@ -53,9 +57,9 @@ jokeSchema.methods.generateToken = function() {
 };
 
 jokeSchema.methods.updateRating = function(latestRating, resp) {
-  var oldTotalRating = this.rating * this.numberOfRatings;
-  this.numberOfRatings++;
-  this.rating = (oldTotalRating + latestRating) / this.numberOfRatings;
+  var oldTotalRating = this.rating.average * this.rating.count;
+  this.rating.count++;
+  this.rating.average = (oldTotalRating + latestRating) / this.rating.count;
   this.save(function(err) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
@@ -64,8 +68,8 @@ jokeSchema.methods.updateRating = function(latestRating, resp) {
 };
 
 jokeSchema.methods.indexText = function() {
-  return this.searchableText = (this.setup.toLowerCase().split(/[^a-z0-9]/).join('')
-    + this.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
+  return this.jokeText.searchable = (this.jokeText.setup.toLowerCase().split(/[^a-z0-9]/).join('')
+    + this.jokeText.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
 };
 
 module.exports = mongoose.model('Joke', jokeSchema);

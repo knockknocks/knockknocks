@@ -6,8 +6,8 @@ var handleError = require(__dirname + '/../lib/handle_error');
 var jokeEvents = new EE();
 
 jokeEvents.on('user_knocked', function(resp, user, userToken) {
-  if(user.unseenJokes.length) {
-    var randomID = user.unseenJokes[Math.floor(Math.random() * user.unseenJokes.length)];
+  if(user.unseen.jokes.length) {
+    var randomID = user.unseen.jokes[Math.floor(Math.random() * user.unseen.jokes.length)];
     
     Joke.findOne({ID: randomID}, function(err, data) {
       if(err) {
@@ -21,11 +21,11 @@ jokeEvents.on('user_knocked', function(resp, user, userToken) {
     });
   }
   //if user has empty unseen jokes array,
-    //either they ran out (jokeIndex > 0),
-    //or everything's new (jokeIndex == 0 and we have no jokes)
+    //either they ran out (unseen.index > 0),
+    //or everything's new (unseen.index == 0 and we have no jokes)
       //ideally, even on initial startup, we'll have jokes available (authored by the creators)
-  if(!user.unseenJokes.length && user.jokeIndex > 0) {
-    user.jokeIndex = 0;
+  if(!user.unseen.jokes.length && user.unseen.index > 0) {
+    user.unseen.index = 0;
     user.updateUnseenArray(function(err) {
       if(err) {
         return handleError(err, resp, 500);  //err = database error; show as server error (500)
@@ -38,7 +38,7 @@ jokeEvents.on('user_knocked', function(resp, user, userToken) {
     });
   }
 
-  if(!user.jokeIndex) {
+  if(!user.unseen.index) {
     resp.json({msg: "Sorry, we don't have any jokes right now. Maybe you can give us some?"});
   }
 });

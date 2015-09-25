@@ -19,8 +19,6 @@ var jokeEvents = require(__dirname + '/../events/joke_events');
 var jokeRouter = module.exports = exports = express.Router();
 
 /**
- * @name
-    GET /knockknock
  * @method
     Logged-in users looking to be told a joke go to the /knockknock endpoint.\n
     This path finds a joke the user hasn't seen yet and responds with the joke ID and "Knock knock."\n
@@ -42,9 +40,9 @@ jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
-    var jokeText = data.setup + ".\n";
+    var joke = data.jokeText.setup + ".\n";
     resp.json({
-      msg: jokeText,
+      msg: joke,
       token: req.body.token,
       jtoken: data.generateToken()
     });
@@ -70,9 +68,9 @@ jokeRouter.post('/punchline/', jsonParser, eatAuth, function(req, resp) {
       }
     });
 
-    var jokeText = data.punchline + ".";
+    var joke = data.jokeText.punchline + ".";
     resp.json({
-      msg: jokeText, 
+      msg: joke, 
       token: req.body.token,
       jtoken: data.generateToken()
     });
@@ -93,7 +91,7 @@ jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
 
     data.updateRating(req.body.rating, resp);
 
-    resp.json({msg: "The average rating for this joke is " + data.rating.toFixed(1) + " knocks!\n"});
+    resp.json({msg: "The average rating for this joke is " + data.rating.average.toFixed(1) + " knocks!\n"});
   });
 });
 
@@ -104,15 +102,18 @@ jokeRouter.post('/joke', jsonParser, eatAuth, function(req, resp) {
 
 //user sends setup for joke
 jokeRouter.post('/joke/setup', jsonParser, eatAuth, function(req, resp) {
-  resp.json({msg: req.body.setup + " who?\n", token: req.body.token});
+  resp.json({
+    msg: (req.body.setup)[0].toUpperCase() + (req.body.setup).slice(1) + " who?\n", //capitalizes the first letter
+    token: req.body.token
+  });
 });
 
 //user sends punchline; joke gets saved
 jokeRouter.post('/joke/punchline', jsonParser, eatAuth, function(req, resp) {
-  var newJoke = new Joke(req.body);
+  var newJoke = new Joke({jokeText: {setup: req.body.setup, punchline: req.body.punchline}});
 
   //see if we already heard that one
-  Joke.findOne({searchableText: newJoke.indexText()}, function(err, data) {
+  Joke.findOne({'jokeText.searchable': newJoke.indexText()}, function(err, data) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
