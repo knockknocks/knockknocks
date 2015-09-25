@@ -25,49 +25,51 @@ var Counter = require(__dirname + '/counter');
  */
 var jokeSchema = new mongoose.Schema({
   ID: {type: Number, unique: true},
-  setup: {type: String, trim: true},
-  punchline: {type: String, trim: true},
-  searchableText: String,
+  jokeText: {
+    setup: {type: String, trim: true},
+    punchline: {type: String, trim: true},
+    searchable: {type: String, unique: true}
+  },
   author: String,
-  rating: {type: Number, min: 1, max: 5, default: 1}, //one of the first stretch goals
-  numberOfRatings: {type: Number, default: 0}
+  rating: {
+    average: {type: Number, min: 1, max: 5, default: 1},
+    count: {type: Number, min: 0, default: 0}
+  }
   //, adult_only: Boolean {default: true} //not in use right away
 });
 
 //validation: make setup and punchline initial capped; case-insensitive, no-punctuation validation
 
 jokeSchema.pre('save', function(next) {
-  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: { seq: 1}}, function(err, counter) {
+  Counter.findByIdAndUpdate({_id: 'entityId'}, {$inc: {seq: 1}}, function(err, counter) {
     if(err) {
       return next(err);
     }
 
-    this.ID = counter.seq;
+    this.ID = counter.seq + 1;
     next();
   }.bind(this));
 });
 
 /************** METHODS ******************/
-//respond with setups and punchlines, include author?
-//respond to setups and punchlines
 jokeSchema.methods.generateToken = function() {
   return this.ID;
 };
 
 jokeSchema.methods.updateRating = function(latestRating, resp) {
-  var oldTotalRating = this.rating * this.numberOfRatings;
-  this.numberOfRatings++;
-  this.rating = (oldTotalRating + latestRating) / this.numberOfRatings;
+  var oldTotalRating = this.rating.average * this.rating.count;
+  this.rating.count++;
+  this.rating.average = (oldTotalRating + latestRating) / this.rating.count;
   this.save(function(err) {
     if(err) {
-      return handleError(err, resp);
+      return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
   });
 };
 
 jokeSchema.methods.indexText = function() {
-  return this.searchableText = (this.setup.toLowerCase().split(/[^a-z0-9]/).join('')
-    + this.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
+  return this.jokeText.searchable = (this.jokeText.setup.toLowerCase().split(/[^a-z0-9]/).join('')
+    + this.jokeText.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
 };
 
 module.exports = mongoose.model('Joke', jokeSchema);

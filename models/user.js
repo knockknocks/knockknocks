@@ -16,8 +16,10 @@ var userSchema = new mongoose.Schema({
     password: String
   },
 
-  unseenJokes: Array,  //contains IDs of unseen jokes
-  jokeIndex: {type: Number, default: 0}  // keeps track of highest ID added to unseen jokes
+  unseen: {
+    jokes: Array,  //contains IDs of unseen jokes
+    index: {type: Number, default: 0}  // keeps track of highest ID added to unseen jokes
+  }
   // adult: Boolean  //for allowing adult jokes; not in use yet
 });
 
@@ -46,20 +48,30 @@ userSchema.methods.updateUnseenArray = function(callback) {
       return callback(err);
     }
     //only do something if user's index is less than the counter (counter === newest joke's ID) (this skips if there are no jokes)
-    if(this.jokeIndex < data.seq) {
-      for(var i = this.jokeIndex + 1; i <= data.seq; i++) {
-        this.unseenJokes.push(i);
+    if(this.unseen.index < data.seq) {
+      for(var i = this.unseen.index + 1; i <= data.seq; i++) {
+        this.unseen.jokes.push(i);
       }
 
-      this.jokeIndex = data.seq;
+      this.unseen.index = data.seq;
       this.save(function(err) {
         if(err) {
           return callback(err);
         }
-        callback();
+        callback(null);
       });
     }
   }.bind(this));
+};
+
+userSchema.methods.unseenPop = function(jokeID, callback) {
+  this.unseen.jokes.splice(this.unseen.jokes.indexOf(jokeID), 1);
+  this.save(function(err) {
+    if(err) {
+      return callback(err);
+    }
+    callback(null);
+  });
 };
 
 module.exports = mongoose.model('User', userSchema);
