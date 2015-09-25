@@ -7,7 +7,6 @@ chai.use(chaiHttp);
 var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
-var Counter = require(__dirname + '/../models/counter');
 var User = require(__dirname + '/../models/user');
 
 process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
@@ -25,15 +24,6 @@ describe("the joke resource", function() {
     });
   });
 
-  before(function(done) {
-    var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err) {
-      if(err) {
-        throw err;
-      }
-      done();
-    });
-  });
   before(function(done) {
     var user = new User();
     user.email = 'tester@test.com';

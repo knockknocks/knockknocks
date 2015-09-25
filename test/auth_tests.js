@@ -39,16 +39,6 @@ describe('auth', function() {
     });
   });
 
-  before(function(done) {
-    var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err, data) {  /* jshint ignore:line */
-      if(err) {
-        throw err;
-      }
-      done();
-    });
-  });
-
   it('should be able to create a user', function(done) {
     chai.request(apiURL)
       .post('/signup')

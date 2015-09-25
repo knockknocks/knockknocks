@@ -3,7 +3,7 @@
 var mongoose = require('mongoose');
 
 var counterSchema = mongoose.Schema({
-  _id: {type: String, required: true},
+  _id: {type: String, required: true, default: 'entityId'},
   seq: {type: Number, default: 0}
 });
 

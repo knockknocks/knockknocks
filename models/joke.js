@@ -9,8 +9,8 @@
 
 var mongoose = require('mongoose');
 
-var handleError = require(__dirname + '/../lib/handle_error');
 var Counter = require(__dirname + '/counter');
+var counterEvents = require(__dirname + '/../events/counter_events');
 
 /**
  * The joke schema is used to store jokes given by users.
@@ -45,9 +45,14 @@ jokeSchema.pre('save', function(next) {
     if(err) {
       return next(err);
     }
-
-    this.ID = counter.seq + 1;
-    next();
+    if(!counter) {
+      counterEvents.emit('first_joke', this, next);
+      next();
+    }
+    else {
+      this.ID = counter.seq + 1;
+      next();
+    }
   }.bind(this));
 });
 
@@ -56,15 +61,10 @@ jokeSchema.methods.generateToken = function() {
   return this.ID;
 };
 
-jokeSchema.methods.updateRating = function(latestRating, resp) {
+jokeSchema.methods.updateRating = function(latestRating) {
   var oldTotalRating = this.rating.average * this.rating.count;
-  this.rating.count++;
-  this.rating.average = (oldTotalRating + latestRating) / this.rating.count;
-  this.save(function(err) {
-    if(err) {
-      return handleError(err, resp, 500);  //err = database error; show as server error (500)
-    }
-  });
+  var newAverage = (oldTotalRating + latestRating) / (this.rating.count + 1);
+  this.set({'rating.average': newAverage, 'rating.count': this.rating.count + 1});
 };
 
 jokeSchema.methods.indexText = function() {

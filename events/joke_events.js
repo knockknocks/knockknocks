@@ -1,3 +1,5 @@
+'use strict';
+
 var EE = require('events').EventEmitter;
 
 var Joke = require(__dirname + '/../models/joke');
