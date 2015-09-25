@@ -43,21 +43,22 @@ usersRouter.get('/signin', httpBasic, function(req, resp) {
 usersRouter.get('/verify/:clickback', function(req, resp) {
   var decodedString = new Buffer(req.params.clickback, 'base64').toString('ascii')
   var splitString = decodedString.split(':');
-  console.log(splitString[0]);
   User.findOne({'basic.username': splitString[0]}, function(err, user){
-    console.log('findOne Error', err);
-    console.log('findOne User', user);
     if (err) {
       return handleError(err, resp);
     }
     if (!user)  {
-      return ('Meow! Could not authenticat!');
+      return resp.json({msg: 'Meow! Could not authenticat!'});
     }
-    user.valid = true;
-    return ('Account validated!');
-  })
-  resp.end();
-
+    user.validEmail = true;
+    user.save(function(err, data) {
+      if (err) {
+        return resp.status(400).json({err:"Meow!, Could not authenticat"});
+      }
+    });
+    var validity = user.validEmail;
+    resp.json({msg: 'Account validated!', validity: validity});
+  });
 });
 
 

@@ -49,11 +49,19 @@ describe('auth', function() {
   });
 
   describe('user already in database', function() {
+    var encodedClickBack = '';
+    var user = new User();
+
     before(function(done) {
-      var user = new User();
+      //user = new User();
       user.email = 'testuser2@test.com';
       user.username = 'testuser2';
       user.basic.username = 'testuser2';
+
+      var clickBack = user.username + ':' + user.email;
+      encodedClickBack = new Buffer(clickBack).toString('base64');
+
+
       user.generateHash('testpass2', function(err, resp) {
         if (err) {
           throw err;
@@ -80,6 +88,17 @@ describe('auth', function() {
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.body.token).to.have.length.above(0);
+          done();
+        });
+    });
+
+    it('should be able to decode the returned base64 chunk and change the the validEmail to true', function(done) {
+      chai.request(apiURL)
+        .get('/verify/' + encodedClickBack)
+        .end(function(err, resp) {
+          expect(err).to.eql(null);
+          expect(resp.body.msg).to.eql('Account validated!');
+          expect(resp.body.validity).to.eql(true);
           done();
         });
     });
