@@ -161,7 +161,8 @@ describe("the joke resource", function() {
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
-          expect(resp.body.msg).to.eql("The average rating for this joke is 4.0 knocks!\n");
+          expect(resp.body.average).to.eql(4);
+          expect(resp.body.count).to.eql(1);
           done();
         });
     });

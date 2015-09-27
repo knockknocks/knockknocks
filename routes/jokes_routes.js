@@ -39,8 +39,7 @@ jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
-
-    var joke = data.jokeText.setup;
+    var joke = (data && data.jokeText)? data.jokeText.setup : '';
     resp.json({
       msg: joke,
       token: req.body.token,
@@ -56,7 +55,7 @@ jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
     It uses the joke token to find which joke we're telling and sends it back again.\n
     The user's unseen list will also be updated.
  */
-jokeRouter.post('/punchline/', jsonParser, eatAuth, function(req, resp) {
+jokeRouter.post('/punchline', jsonParser, eatAuth, function(req, resp) {
   Joke.findOne({ID: req.body.jtoken}, function(err, data) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
@@ -91,7 +90,7 @@ jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
 
     data.updateRating(req.body.rating);
 
-    resp.json({msg: "The average rating for this joke is " + data.rating.average.toFixed(1) + " knocks!\n"});
+    resp.json({ average: data.rating.average, count: data.rating.count});
   });
 });
 
@@ -103,7 +102,7 @@ jokeRouter.post('/joke', jsonParser, eatAuth, function(req, resp) {
 //user sends setup for joke
 jokeRouter.post('/joke/setup', jsonParser, eatAuth, function(req, resp) {
   resp.json({
-    msg: (req.body.setup)[0].toUpperCase() + (req.body.setup).slice(1) + " who?", //capitalizes the first letter
+    msg: req.body.setup + " who?",
     token: req.body.token
   });
 });
