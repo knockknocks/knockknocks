@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Knock Knock</title>
+</head>
+<body>
+<p>You tell it jokes. It tells you jokes. It's fun!</p>
+<h2><img src="knock64.png">&nbsp;</h2>
+Knock Knock<br>
+ &nbsp;&nbsp;Who's there?<br>
+<%= setupParam %><br>
+ &nbsp;&nbsp;Setup who?<br>
+<%= punchParam %><br>
+<p><%= rateCount %> user(s) have rated this joke by user '<%= authorParam %>' at <%= ratingParam %> knocks!</p>
+<form action="/joke" enctype="application/json" method="post">
+<input type="hidden" name="user" value=<%= userParam %> />
+<input type="submit" value="Knock Knock" /></form>
+</td><td>
+<form action="/telljoke" enctype="application/json" method="post">
+<input type="hidden" name="user" value=<%= userParam %> />
+<input type="submit" value="Hear a Joke" /></form>
+</td><td>
+<form action="/logout" enctype="application/json" method="post">
+<input type="hidden" name="user" value=<%= userParam %> />
+<input type="submit" value="Log Out" /></form>
+</form>
+</tr>
+</table>
+</p>
+</body>
+</html>

@@ -7,23 +7,14 @@ chai.use(chaiHttp);
 var mongoose = require('mongoose');
 
 var Joke = require(__dirname + '/../models/joke');
-var Counter = require(__dirname + '/../models/counter');
+var User = require(__dirname + '/../models/user');
 
+process.env.MONGO_URL = 'mongodb://localhost/knockknocks_dev';
 require(__dirname + '/../server.js');
 var kkPORT = (process.env.PORT || 3000);
 var jokeURL = 'localhost:' + kkPORT;
 
 describe("the joke resource", function() {
-  before(function(done) {
-    var jokeCounter = new Counter({_id: 'entityId'});
-    jokeCounter.save(function(err, data) {
-      if(err) {
-        throw err;
-      }
-      done();
-    });
-  });
-
   after(function(done) {
     mongoose.connection.db.dropDatabase(function(err) {
       if(err) {
@@ -33,9 +24,34 @@ describe("the joke resource", function() {
     });
   });
 
+  before(function(done) {
+    var user = new User();
+    user.email = 'tester@test.com';
+    user.username = user.basic.username = 'tester';
+    user.generateHash('testpass123', function(err) {
+      if(err) {
+        throw err;
+      }
+      user.save(function(err) {
+        if(err) {
+          throw err;
+        }
+        user.generateToken(function(err, token) {
+          if(err) {
+            throw err;
+          }
+          this.token = token;
+          done();
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
+    
+  });
+
   it("should respond to 'Knock knock.'", function(done) {
     chai.request(jokeURL)
-      .get('/joke')
+      .post('/joke')
+      .send({token: this.token})
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
@@ -47,7 +63,7 @@ describe("the joke resource", function() {
   it("should listen for setup", function(done) {
     chai.request(jokeURL)
       .post('/joke/setup')
-      .send({setup: "Old Lady"})
+      .send({setup: "Old Lady", token: this.token})
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
@@ -59,11 +75,11 @@ describe("the joke resource", function() {
   it("should listen for punchline and save joke", function(done) {
     chai.request(jokeURL)
       .post('/joke/punchline')
-      .send({setup: "Old Lady", punchline: "I didn't know you could yodel"})
+      .send({setup: "Old Lady", punchline: "I didn't know you could yodel", token: this.token})
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
-        expect(resp.body.msg).to.eql("That's a new one!");
+        expect(resp.body.msg).to.eql("Thanks, tester! That's a new one!");
         done();
       });
   });
@@ -71,67 +87,76 @@ describe("the joke resource", function() {
   describe("routes that need a joke in the database", function() {
     before(function(done) {
       var testJoke = new Joke({
-        setup: "To",
-        punchline: "To WHOM",
+        jokeText: {
+          setup: "To",
+          punchline: "To WHOM",
+        },
         author: "admin"
       });
-
+      testJoke.indexText();
       testJoke.save(function(err, data) {
         if(err) {
-          return err;
+          throw err;
         }
-
         this.testJoke = data;
         done();
       }.bind(this));
     });
-/*
-"Knock knock.\n"    //ideally: server sends this on get                           (server starts a joke)
-+ "Who's there?\n"  //user says this (or something)                               (user instigates joke)
-+ "To.\n"           //setup: server sends in response to new GET with string      (server sends setup)
-+ "To who?\n"       //user says this (or something)                               (user consents to joke)
-+ "To WHOM.");      //punchline: server sends in response to new GET with string  (server completes joke: remove from user's unseen list)
-*/
+    before(function(done) {
+      chai.request(jokeURL)
+        .get('/signin')
+        .auth('tester', 'testpass123')
+        .end(function() {
+          done();
+        });
+    });
+
     it("should be able to tell a joke", function(done) {
       chai.request(jokeURL)
-        .get('/knockknock')
+        .post('/knockknock')
+        .send({token: this.token})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
-          expect(resp.body.msg).to.eql("Joke #1\nKnock knock.\n");
-          expect(resp.body.token).to.eql(1);
+          expect(resp.body.msg).to.match(/Joke #[12]\nKnock knock.\n/);
+          expect(resp.body.token).to.eql(this.token);
+          expect(resp.body.jtoken).to.match(/[12]/);
           done();
-        });
+        }.bind(this));
     });
 
     it("should be able to respond to set up the joke", function(done) {
       chai.request(jokeURL)
-        .get('/whosthere/1')
+        .post('/whosthere')
+        .send({token: this.token, jtoken: this.testJoke.ID})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
           expect(resp.body.msg).to.eql("To.\n");
-          expect(resp.body.token).to.eql(1);
+          expect(resp.body.token).to.eql(this.token);
+          expect(resp.body.jtoken).to.eql(this.testJoke.ID);
           done();
-        });
+        }.bind(this));
     });
 
     it("should be able to tell the punchline", function(done) {
       chai.request(jokeURL)
-        .get('/punchline/1')
+        .post('/punchline')
+        .send({token: this.token, jtoken: this.testJoke.ID})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
           expect(resp.body.msg).to.eql("To WHOM.");
-          expect(resp.body.token).to.eql(1);
+          expect(resp.body.token).to.eql(this.token);
+          expect(resp.body.jtoken).to.eql(this.testJoke.ID);
           done();
-        });
+        }.bind(this));
     });
 
     it("should be able to rate a joke", function(done) {
       chai.request(jokeURL)
-        .post('/rate/1')
-        .send({rating: 4})
+        .post('/rate')
+        .send({token: this.token, jtoken: this.testJoke.ID, rating: 4})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
@@ -143,7 +168,7 @@ describe("the joke resource", function() {
     it("should not save a duplicate joke", function(done) {
       chai.request(jokeURL)
         .post('/joke/punchline')
-        .send({setup: "To", punchline: "To WHOM", author: "admin"})
+        .send({setup: "To", punchline: "To WHOM", token: this.token})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);

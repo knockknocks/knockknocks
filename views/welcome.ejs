@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Knock Knock</title>
+</head>
+<body>
+<p>You tell it jokes. It tells you jokes. It's fun!</p>
+<h2><img src="knock64.png">Welcome to knockknocks!</h2>
+<p>Pick your user name and password</p>
+<form action="/signup" enctype="application/json" method="post">
+<table>
+<tr><td><label for="login">User Name</label></td> <td><input type="text" name="login" autofocus="autofocus" /></td><td></td></tr>
+<tr><td><label for="password">Password</label></td> <td><input type="password" name="password" /></td>
+<td><input type="submit" value="Sign up!" /></td></tr>
+</table>
+<input type="hidden" value="<%= emailParam %>" name="email" />
+</form>
+</body>
+</html>

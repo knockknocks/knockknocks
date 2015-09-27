@@ -8,7 +8,7 @@ or your email to subscribe to knockknocks
 
 - - - - - - - - - - - - - - - -
 Enter email:
- Who's there? _user@server.dom___ - one of:   <= POST { email: 'user@server.dom'}
+ Who's there? _user@server.dom___ - one of:   <= POST { login: 'user@server.dom'}
 That email is already used - enter            => resp(409).{ msg: 'email used'}
 your username to log in (back to Initial)
   - or -                          
@@ -16,9 +16,9 @@ your username to log in (back to Initial)
 
 - - - - - - - - - - - - - - - -
 Enter user name:         
- Who's there? _username_                      <= POST { user: 'name'}
+ Who's there? _username_                      <= POST { login: 'name'}
 Username who? _p******d_                      => write HTML with user name
-Click "Log in"                                <= POST { user: 'name' pass: 'pwd' }
+Click "Log in"                                <= POST { login: 'name' pass: 'pwd' }
 or <enter> from password field = one of:
 Incorrect user name or password               => write HTML
 [could extend to password reset, p'bly not]
