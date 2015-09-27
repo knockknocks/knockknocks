@@ -75,7 +75,7 @@ describe('auth', function() {
 
     it('should be able to sign in', function(done) {
       chai.request(apiURL)
-        .get('/signin')
+        .get('/login')
         .auth('testuser2', 'testpass2')
         .end(function(err, resp) {
           expect(err).to.eql(null);

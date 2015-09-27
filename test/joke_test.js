@@ -71,8 +71,8 @@ describe("the joke resource", function() {
   describe("routes that need a joke in the database", function() {
     before(function(done) {
       var testJoke = new Joke({
-        setup: "To",
-        punchline: "To WHOM",
+        setup: "To.",
+        punchline: "To WHOM.",
         author: "admin"
       });
 
@@ -98,7 +98,7 @@ describe("the joke resource", function() {
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
-          expect(resp.body.msg).to.eql("Joke #1\nKnock knock.\n");
+          expect(resp.body.msg).to.eql("Knock knock\n");
           expect(resp.body.token).to.eql(1);
           done();
         });
@@ -143,7 +143,7 @@ describe("the joke resource", function() {
     it("should not save a duplicate joke", function(done) {
       chai.request(jokeURL)
         .post('/joke/punchline')
-        .send({setup: "To", punchline: "To WHOM", author: "admin"})
+        .send({setup: "To.", punchline: "To WHOM.", author: "admin"})
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);

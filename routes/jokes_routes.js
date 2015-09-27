@@ -12,15 +12,14 @@ jokeRouter.get('/knockknock', function(req, resp) {
   
   //retrieve joke for session, show ID and open with "Knock knock."
   //when finding a joke, need to find one within the user's not_seen array
-  Joke.findOne({ID: 1}, function(err, data) {
+  Joke.findOne({ID: 1}, function(err, joke) {
     if(err) {
       return handleError(err, resp);
     }
     
-    var jokeText = "Joke #" + data.ID + "\n";
-    jokeText +=  "Knock knock.\n"; //first line to send
+    var jokeText = "Knock knock\n"; //first line to send
 
-    resp.json({msg: jokeText, token: data.generateToken()});  //send token, also send joke ID?
+    resp.json({msg: jokeText, token: joke.generateToken()});  //send token, also send joke ID?
   });
 });
 
@@ -30,7 +29,7 @@ jokeRouter.get('/whosthere/*', function(req, resp) {
       return handleError(err, resp);
     }
 
-    var jokeText = data.setup + ".\n";
+    var jokeText = data.setup + "\n";
     resp.json({msg: jokeText, token: data.generateToken()});  //also send token
   });
 });
@@ -41,7 +40,7 @@ jokeRouter.get('/punchline/*', function(req, resp) {
       return handleError(err, resp);
     }
 
-    var jokeText = data.punchline + ".";
+    var jokeText = data.punchline;
     resp.json({msg: jokeText, token: data.generateToken()});
   });
 });
