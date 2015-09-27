@@ -68,8 +68,10 @@ jokeSchema.methods.updateRating = function(latestRating) {
 };
 
 jokeSchema.methods.indexText = function() {
-  return this.jokeText.searchable = (this.jokeText.setup.toLowerCase().split(/[^a-z0-9]/).join('')
-    + this.jokeText.punchline.toLowerCase().split(/[^a-z0-9]/).join(''));
+  return (this.jokeText.setup && this.jokeText.punchline)?
+    this.jokeText.searchable = (this.jokeText.setup.toLowerCase().split(/[^a-z0-9]/).join('')
+      + this.jokeText.punchline.toLowerCase().split(/[^a-z0-9]/).join(''))
+    : "";
 };
 
 module.exports = mongoose.model('Joke', jokeSchema);

@@ -40,7 +40,7 @@ jokeRouter.post('/whosthere', jsonParser, eatAuth, function(req, resp) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
 
-    var joke = data.jokeText.setup + ".\n";
+    var joke = data.jokeText.setup;
     resp.json({
       msg: joke,
       token: req.body.token,
@@ -68,7 +68,7 @@ jokeRouter.post('/punchline/', jsonParser, eatAuth, function(req, resp) {
       }
     });
 
-    var joke = data.jokeText.punchline + ".";
+    var joke = data.jokeText.punchline;
     resp.json({
       msg: joke, 
       token: req.body.token,
@@ -97,13 +97,13 @@ jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
 
 //user sends "Knock knock" so server can hear joke
 jokeRouter.post('/joke', jsonParser, eatAuth, function(req, resp) {
-  resp.json({msg: "Who's there?\n", token: req.body.token});
+  resp.json({msg: "Who's there?", token: req.body.token});
 });
 
 //user sends setup for joke
 jokeRouter.post('/joke/setup', jsonParser, eatAuth, function(req, resp) {
   resp.json({
-    msg: (req.body.setup)[0].toUpperCase() + (req.body.setup).slice(1) + " who?\n", //capitalizes the first letter
+    msg: (req.body.setup)[0].toUpperCase() + (req.body.setup).slice(1) + " who?", //capitalizes the first letter
     token: req.body.token
   });
 });
@@ -129,7 +129,7 @@ jokeRouter.post('/joke/punchline', jsonParser, eatAuth, function(req, resp) {
         return handleError(err, resp, 500);  //err = database error; show as server error (500)
       }
 
-      resp.json({msg: "Thanks, " + req.user.username + "! That's a new one!"});
+      resp.json({msg: "That's a new one!"});
     });
   });
 });

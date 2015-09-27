@@ -25,7 +25,7 @@ usersRouter.post('/signup', jsonParser, function(req, resp) {
   });
 });
 
-usersRouter.get('/signin', httpBasic, function(req, resp) {  
+usersRouter.get('/login', httpBasic, function(req, resp) {  
   User.findOne({'basic.username': req.auth.username}, function(err, user) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)

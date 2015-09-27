@@ -55,7 +55,7 @@ describe("the joke resource", function() {
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
-        expect(resp.body.msg).to.eql("Who's there?\n");
+        expect(resp.body.msg).to.eql("Who's there?");
         done();
       });
   });
@@ -67,7 +67,7 @@ describe("the joke resource", function() {
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
-        expect(resp.body.msg).to.eql("Old Lady who?\n");
+        expect(resp.body.msg).to.eql("Old Lady who?");
         done();
       });
   });
@@ -79,7 +79,7 @@ describe("the joke resource", function() {
       .end(function(err, resp) {
         expect(err).to.eql(null);
         expect(resp.status).to.eql(200);
-        expect(resp.body.msg).to.eql("Thanks, tester! That's a new one!");
+        expect(resp.body.msg).to.eql("That's a new one!");
         done();
       });
   });
@@ -98,13 +98,14 @@ describe("the joke resource", function() {
         if(err) {
           throw err;
         }
+
         this.testJoke = data;
         done();
       }.bind(this));
     });
     before(function(done) {
       chai.request(jokeURL)
-        .get('/signin')
+        .get('/login')
         .auth('tester', 'testpass123')
         .end(function() {
           done();
@@ -132,7 +133,7 @@ describe("the joke resource", function() {
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
-          expect(resp.body.msg).to.eql("To.\n");
+          expect(resp.body.msg).to.eql("To");
           expect(resp.body.token).to.eql(this.token);
           expect(resp.body.jtoken).to.eql(this.testJoke.ID);
           done();
@@ -146,7 +147,7 @@ describe("the joke resource", function() {
         .end(function(err, resp) {
           expect(err).to.eql(null);
           expect(resp.status).to.eql(200);
-          expect(resp.body.msg).to.eql("To WHOM.");
+          expect(resp.body.msg).to.eql("To WHOM");
           expect(resp.body.token).to.eql(this.token);
           expect(resp.body.jtoken).to.eql(this.testJoke.ID);
           done();

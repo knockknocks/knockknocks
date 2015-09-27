@@ -14,12 +14,7 @@ app.use('/', usersRouter);
 var jokeRouter = require(__dirname + '/routes/jokes_routes');
 app.use('/', jokeRouter);
 
-// var spikeRouter = require(__dirname + '/routes/spike_routes');
-
-// app.use(express.static('assets'));
-// app.set('view engine', 'ejs');
-
-// app.use('/', spikeRouter);
+app.use(express.static('assets'));
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
