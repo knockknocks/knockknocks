@@ -9,7 +9,9 @@ angular.module('kkApp', [])
 		$scope.User = {};
 		$scope.Token = {};
 		$scope.JokeToken = {};
+		$scope.Joke = {};
 		$scope.errorMessage = '';
+		$scope.alreadyRated = false;
 
 		//////// login
 		$scope.register = function() {
@@ -39,58 +41,87 @@ angular.module('kkApp', [])
 
 			//////// start
 	    $scope.newJoke = function() {
-	    	$scope.showStart = !($scope.showNew = true);
-	    	$scope.showSetup = $scope.showPunch = $scope.showNextSteps = false;
+	    	$scope.Joke = {};
+	    	$scope.showLogin = $scope.showStart = $scope.showHear = !($scope.showNew = true);
+	    	$scope.showPunch = $scope.showNextSteps = false;
+				$http.post('/joke', $scope.Token).
+					success(function(jokeStart) {
+						$scope.JokeToken = jokeStart.token;
+						$scope.showSetup = true;
+					}).error(function(err) {
+						$scope.errorMessage = err.msg;
+					});
 	    };
 			$scope.hearJoke = function() {
-				$scope.showStart = !($scope.showHear = true);
+	    	$scope.showLogin = $scope.showStart = $scope.showNew = !($scope.showHear = true);
 	    	$scope.showHearSetup = $scope.showNextSteps = false;
+	    	$scope.alreadyRated = false;
+				$http.post('/knockknock', $scope.Token).
+					success(function(joke) {
+						$scope.Joke = { ID: joke.jtoken };
+						$scope.JokeToken = joke.jtoken;
+					}).error(function(err) {
+						$scope.errorMessage = err.msg;
+					});
 			};
 			$scope.logoff = function() {
 				$scope.Token = {};
-				$scope.showStart = !($scope.showLogin = true);
+	    	$scope.showStart = $scope.showHear = $scope.showNew = !($scope.showLogin = true);
 			};
 
 			//////// newjoke
-			$scope.getNewjoke = function() {
+			$scope.newSetup = function(setup) {
+				$http.post('/joke/setup', { setup: $scope.Joke.setup,
+																		token: $scope.Token.token }).
+					success(function(joke) {
+						$scope.showPunch = true;
+					}).error(function(err) {
+						$scope.errorMessage = err.msg;
+					});
 			};
-			$scope.postNewSetup = function(setup) {
-
-			};
-			$scope.postNewPunchline = function(punchline) {
-
+			$scope.newPunchline = function(punchline) {
+				$http.post('/joke/punchline', { setup: $scope.Joke.setup,
+																				punchline: $scope.Joke.punchline,
+																			 	token: $scope.Token.token }).
+					success(function(joke) {
+						$scope.finishJoke = joke.msg;
+						$scope.showNextSteps = true;
+					}).error(function(err) {
+						$scope.errorMessage = err.msg;
+					});
 			};
 
 			//////// hearjoke
-			$scope.getKnockknock = function() {
-				$http.get('/knockknock').
-					success(function(jokeStart) {
-						$scope.JokeToken = jokeStart.token;
+			$scope.hearSetup = function() {
+				$http.post('/whosthere', {	token: $scope.Token.token,
+																		jtoken: $scope.JokeToken } ).
+					success(function(joke) {
+						$scope.Joke.setup = joke.msg;
+						$scope.showHearSetup = true;
 					}).error(function(err) {
 						$scope.errorMessage = err.msg;
 					});
 			};
-
-			$scope.getSetup = function() {
-				$http.get('/whosthere/' + $scope.JokeToken).
-					success(function(jokeSetup) {
-						$scope.Joke.setup = jokeSetup.msg;
-						$scope.JokeToken = jokeSetup.token;
-					}).error(function(err) {
-						$scope.errorMessage = err.msg;
-					});
-			};
-			$scope.getPunchline = function() {
-				$http.get('/punchline/' + $scope.JokeToken).
-					success(function(jokePunchline) {
-						$scope.Joke.punchline = jokePunchline.msg;
-						$scope.JokeToken = jokeSetup.token;
+			$scope.hearPunchline = function() {
+				$http.post('/punchline', {	token: $scope.Token.token,
+																		jtoken: $scope.JokeToken } ).
+					success(function(joke) {
+						$scope.Joke.punchline = joke.msg;
+						$scope.showNextSteps = true;
 					}).error(function(err) {
 						$scope.errorMessage = err.msg;
 					});
 			};
 			$scope.rateJoke = function(rating) {
-
+				$http.post('/rate', {	token: $scope.Token.token,
+															jtoken: $scope.JokeToken,
+															rating: rating } ).
+					success(function(newRating) {
+						$scope.Joke.rating = newRating;
+						$scope.alreadyRated = true;
+					}).error(function(err) {
+						$scope.errorMessage = err.msg;
+					});
 			};
 		}
 	});

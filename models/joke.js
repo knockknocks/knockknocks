@@ -65,6 +65,8 @@ jokeSchema.methods.updateRating = function(latestRating) {
   var oldTotalRating = this.rating.average * this.rating.count;
   var newAverage = (oldTotalRating + latestRating) / (this.rating.count + 1);
   this.set({'rating.average': newAverage, 'rating.count': this.rating.count + 1});
+  console.log(this);
+  //Joke.findByIdAndUpdate(this.ID)
 };
 
 jokeSchema.methods.indexText = function() {
