@@ -8,7 +8,6 @@ var handleError = require(__dirname + '/../lib/handle_error');
 var jokeEvents = new EE();
 
 jokeEvents.on('user_knocked', function(resp, user, userToken) {
-  console.log('user_knocked: ', user);
   if(user.unseen.jokes.length) {
     var randomID = user.unseen.jokes[Math.floor(Math.random() * user.unseen.jokes.length)];
     
