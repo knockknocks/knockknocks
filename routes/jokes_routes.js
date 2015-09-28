@@ -87,10 +87,18 @@ jokeRouter.post('/rate', jsonParser, eatAuth, function(req, resp) {
     if(err) {
       return handleError(err, resp, 500);  //err = database error; show as server error (500)
     }
+    if (data) {
+      data.updateRating(req.body.rating);
+      var updJoke = new Joke({ID: data.ID,
+        jokeText: { setup: data.setup, punchline: data.punchline, searchable: data.searchable },
+        author: data.author, rating: { average: data.rating.average, count: data.rating.count }
+      });
+      updJoke.save(function(err) {
+        if (err) return handleError(err, resp, 500);  //err = database error; show as server error (500)
+      });
 
-    data.updateRating(req.body.rating);
-
-    resp.json({ average: data.rating.average, count: data.rating.count});
+      resp.json({ average: data.rating.average, count: data.rating.count});
+    }
   });
 });
 
