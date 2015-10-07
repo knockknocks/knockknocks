@@ -11,7 +11,7 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('test', function() {
-  return gulp.src('test/*_test.js', { read: false })
+  return gulp.src('test/*.js', { read: false })
     .pipe(mocha({reporter: 'dot'}))
     .once('error', function() {
       process.exit(1);
