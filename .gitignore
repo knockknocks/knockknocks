@@ -1,6 +1,5 @@
 node_modules/
 db/**/*
 out/**
-gulpfile.js
 .DS_Store
 **/.DS_Store
